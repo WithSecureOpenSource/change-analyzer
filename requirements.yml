@@ -1,0 +1,21 @@
+name: change_analyzer
+channels:
+  - conda-forge
+  - hargup/label/pypi
+  - anaconda
+  - defaults
+dependencies:
+  - python=3.7
+  - pip
+  - appium-python-client
+  - selenium
+  - psutil
+  - pandas
+  - jinja2
+  - gym
+  - pillow
+  - faker
+  - pywinauto
+  - xmldiff
+  - pip:
+    - -e .
