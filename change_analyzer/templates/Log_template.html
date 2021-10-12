@@ -1,30 +1,35 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-    <title>Test report</title>
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<title>Change analyzer report {{ report_date }}</title>
 <style>
+body {
+  padding: 10px;
+}
+
+a.fill-div {
+    display: block;
+    text-decoration: none;
+	color: black;
+}
+
+td, th {
+  text-align: center;
+}
 
 .sequence-id {
     color: #1e85ff;
 }
 
 .custom-row {
-    color: white;
     cursor: pointer;
-    padding-top: 5px;
-	padding-bottom: 5px;
-	padding-left: 15px;
-	padding-right: 15px;
-	margin-bottom: 2px;
-	margin-left: 10px;
-	margin-right: 10px;
+    padding: 5px 15px 5px 15px;
+    margin: 0px 10px 2px 10px;
     width: 100%;
     border: 1px;
 	border-style: dashed;
@@ -32,59 +37,53 @@
 	border-width: 1px;
     text-align: left;
     outline: none;
-    font-size: 12px;
-	background: white;
+    font-size: 0.85em;
 }
 
-.label {
-	font-size: 0.75em;
+.step {
+	font-size: 0.85em;
     letter-spacing: 1px;
     white-space: nowrap;
     color: black;
 	border-width: 0px;
 	border-radius: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
+	padding: 0px 10px 0px 10px;
 }
 
-
-.label.error, .label.fail, .label.pass, .label.warn, .label.info {
+.step.fail, .step.pass, .step.info {
     color: #fff !important;
     font-weight: bold;
 }
-.label.info {
+
+.step.info {
 	background-color: #999da0;
 }
-.label.error, .label.fail {
+
+.step.fail {
     background-color: #d9534f;
 }
-.label.pass {
+
+.step.fail:hover {
+  background: #d9534f90;
+}
+
+.step.pass {
     background-color: #5cb85c;
 }
 
-.label.pass:hover {
-  background: #7BCCB5;
-}
-.label.fail:hover {
-  background: #F75D59;
+.step.pass:hover {
+  background: #5cb85c90;
 }
 
 .action, .comment {
 	color: black;
 	padding-left: 10px;
+	font-size: 0.85em;
 }
 
 .div-margins {
-	padding-left: 15px;
-	padding-right: 15px;
-	margin-left: 15px;
-	margin-right: 15px;
-}
-
-a.fill-div {
-    display: block;
-    text-decoration: none;
-	color: black;
+	padding: 0px 15px 0px 15px;
+	margin: 0px 15px 0px 15px;
 }
 
 .toggle-div {
@@ -97,33 +96,23 @@ a.fill-div {
 	border-style: solid;
 	border-color: #ddd;
 	border-width: 1px;
-	padding-left: 30px;
-	padding-right: 30px;
+	padding: 0px 30px 0px 30px;
 	margin-left: -5px;
 }
-
-td, th {
-  text-align: center;
-}
-
-	</style>
+</style>
   </head>
-  <body>
-
-    <h2>Test report</h2>
-    <div>Compare sequence
-		<span class="sequence-id">{{ actual_sequence_id }}</span> ({{ sequence1_date }}) with sequence
-		<span class="sequence-id">{{ expected_sequence_id }}</span> ({{ sequence2_date }})
-	</div>
+    <h2>Change analyzer report</h2>
+	<div><b>Expected sequence:</b> <span class="sequence-id">{{ actual_sequence_id }}</span> ({{ sequence1_date }})</div>
+	<div><b>Actual sequence:</b> <span class="sequence-id">{{ expected_sequence_id }}</span> ({{ sequence2_date }})</div>
     <br>
 	<div><b>Date:</b> {{ report_date }}</div>
     <br>
 
     <div class="toggle-div" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="{{ aria_controls }}"><a href="#" class="fill-div"><span class="toggle-a">Toggle all steps</span></a></div>
 
-    {% for expected_step, actual_step, expected_image, actual_image, verdict, comment in sequences_data %}
+    {% for expected_step, actual_step, expected_image, actual_image, verdict, comment, diff_info in sequences_data %}
     <div class="custom-row" data-bs-toggle="collapse" data-bs-target="#step{{ loop.index }}" aria-expanded="false" aria-controls="step{{ loop.index }}">
-		<button class="label {{ verdict }}" type="button">Step {{ loop.index }}</button>
+		<button class="step {{ verdict }}" type="button">Step {{ loop.index }}</button>
 		<span class="action">{{ expected_step }}</span>
 	</div>
 
@@ -131,7 +120,7 @@ td, th {
 	  <div class="col">
 		<div class="collapse multi-collapse" id="step{{ loop.index }}">
 		  <div>
-			  <span class="label info">Info</span>
+			  <span class="step info">Info</span>
 			  <span class="comment">{{ comment }}</span>
 		  </div>
 		  <table class="table table-bordered">
