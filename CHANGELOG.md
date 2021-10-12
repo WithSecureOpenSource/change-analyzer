@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.0 (2021-10-12)
+### Feature
+* Add highlighting diff on elements based on xmldiff ([`00c0c53`](https://github.com/F-Secure/change-analyzer/commit/00c0c53a82662546f317e44c863bf4a8d58d80c9))
+
 ## v0.1.1 (2021-10-12)
 ### Fix
 * Add template to install package ([`990bfd1`](https://github.com/F-Secure/change-analyzer/commit/990bfd1027a9fd36239b3495ef4408b2b99333f6))
