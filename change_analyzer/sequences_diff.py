@@ -33,14 +33,14 @@ class SequencesDiff:
         self.report_file = None
         self.expected_sequence_id = None
         self.actual_sequence_id = None
-        self.expected_images = None
-        self.actual_images = None
-        self.verdicts = []
-        self.comments = []
-        self.diff_info = []
-        self.expected_steps = []
-        self.actual_steps = []
-        self.report_date = None
+        # self.expected_images = None
+        # self.actual_images = None
+        # self.verdicts = []
+        # self.comments = []
+        # self.diff_info = []
+        # self.expected_steps = []
+        # self.actual_steps = []
+        self.report_date = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
         self.df_merged = pd.DataFrame()
 
         self.sequence1_folder = sequence1_folder
@@ -49,10 +49,10 @@ class SequencesDiff:
         self.update_report_file_path()
         self.update_sequences_date()
         self.create_comparisons_folder()
-        self.step_count = 0
+        # self.step_count = 0
 
         self.update_merged_df()
-        self.validate_replay()
+        # self.validate_replay()
         self._write_to_report()
 
     def find_csv_file_within_folder(self, folder: str) -> str:
@@ -114,24 +114,20 @@ class SequencesDiff:
 
     def create_comparisons_folder(self):
         """Create comparisons folder within expected sequence if it doesn't already exist"""
-        folder = os.path.join(os.path.dirname(self.sequence1_file), "comparisons")
+        folder = os.path.join(os.path.dirname(self.sequence1_file), "comparisons", self.report_date)
         os.makedirs(folder, exist_ok=True)
 
     def update_report_file_path(self):
         """ The report file will always be within the first sequence folder"""
         self.expected_sequence_id = os.path.basename(self.sequence1_file).split('.')[0]
         self.actual_sequence_id = os.path.basename(self.sequence2_file).split('.')[0]
-        self.report_date = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
-        file_name = f'{self.expected_sequence_id}_vs_{self.actual_sequence_id}_{self.report_date}.html'
-        self.report_file = os.path.join(os.path.dirname(self.sequence1_file), "comparisons", file_name)
+        self.report_file = os.path.join(os.path.dirname(self.sequence1_file), "comparisons", self.report_date, 'index.html')
 
     def update_merged_df(self):
         """Update merged dataframe using expected and actual dataframes"""
-        df_sequence1 = pd.read_csv(self.sequence1_file)
-        df_sequence2 = pd.read_csv(self.sequence2_file)
         self.df_merged = pd.merge(
-            df_sequence1,
-            df_sequence2,
+            pd.read_csv(self.sequence1_file),
+            pd.read_csv(self.sequence2_file),
             left_index=True,
             right_index=True,
             suffixes=('_expected', '_actual')
@@ -139,37 +135,80 @@ class SequencesDiff:
 
         # Add the first step into DF, based on current first row of DF
         first_step_data = {
-            'SequenceId_expected': self.df_merged['SequenceId_expected'][0],
-            'SequenceId_actual': self.df_merged['SequenceId_actual'][0],
-            'PageSourceAfter_actual': self.df_merged['PageSourceBefore_actual'][0],
-            'PageSourceAfter_expected': self.df_merged['PageSourceBefore_expected'][0],
-            'ActionImageAfter_actual': self.df_merged['ActionImageBefore_actual'][0],
-            'ActionImageAfter_expected': self.df_merged['ActionImageBefore_expected'][0],
-            'ActionToPerform_expected': 'open the Application',
-            'ActionToPerform_actual': 'open the Application',
+            f'{SequenceRecorder.COL_SEQUENCE_ID}_expected': self.df_merged[f'{SequenceRecorder.COL_SEQUENCE_ID}_expected'][0],
+            f'{SequenceRecorder.COL_SEQUENCE_ID}_actual': self.df_merged[f'{SequenceRecorder.COL_SEQUENCE_ID}_actual'][0],
+            f'{SequenceRecorder.COL_PAGE_SOURCE_AFTER}_actual': self.df_merged[f'{SequenceRecorder.COL_PAGE_SOURCE_BEFORE}_actual'][0],
+            f'{SequenceRecorder.COL_PAGE_SOURCE_AFTER}_expected': self.df_merged[f'{SequenceRecorder.COL_PAGE_SOURCE_BEFORE}_expected'][0],
+            f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_actual': self.df_merged[f'{SequenceRecorder.COL_ACTION_IMAGE_BEFORE}_actual'][0],
+            f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_expected': self.df_merged[f'{SequenceRecorder.COL_ACTION_IMAGE_BEFORE}_expected'][0],
+            f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_expected': 'open the Application',
+            f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_actual': 'open the Application',
         }
         first_step_df = pd.DataFrame([first_step_data])
         self.df_merged = pd.concat([first_step_df, self.df_merged], ignore_index=True)
+        self._save_dataframe_to_csv()
 
-        # Add steps ids
-        self.df_merged['StepId'] = [f'Step {i + 1}' for i in range(len(self.df_merged))]
+        self.df_merged["StepVerdict"] = self.df_merged.apply(lambda row: np.array_equal(
+            row[f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_expected'],
+            row[f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_actual']
+        ), axis=1)
+        # TODO log the result of self.df_merged["StepVerdict"].all()
 
-    def validate_replay(self):
-        """Validate if the replay sequence is as expected"""
-        self.expected_steps = list(self.df_merged[f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_expected'])
-        self.actual_steps = list(self.df_merged[f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_actual'])
+        # Images
+        img_col = [col for col in self.df_merged.columns if "image" in col.lower()]
+        for col in img_col:
+            self.df_merged[f"{col}_orig"] = self.df_merged[col]
+            self.df_merged[col] = self.df_merged[col].apply(lambda img: Image.fromarray(np.array(json.loads(img), dtype=np.uint8)))
+        self.df_merged["ImageVerdict"] = self.df_merged.apply(lambda row: np.array_equal(
+            row[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_expected'],
+            row[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_actual']
+        ), axis=1)
+        self.update_verdicts_and_comments(self.df_merged["ImageVerdict"].all())
 
-        valid = self.validate_steps(self.expected_steps, self.actual_steps)
+        # XMLs
+        xml_cols = [col for col in self.df_merged.columns if "pagesource" in col.lower()]
+        for col in xml_cols:
+            self.df_merged[col] = self.df_merged[col].apply(lambda xml: xml.encode(re.findall(r'encoding=\"(.+?)\"', xml)[0]))
+        self.df_merged["PageSource_diff"] = self.df_merged.apply(lambda row: self.extract_diffs_as_dict(
+            row[f'{SequenceRecorder.COL_PAGE_SOURCE_AFTER}_expected'],
+            row[f'{SequenceRecorder.COL_PAGE_SOURCE_AFTER}_actual']
+        ), axis=1)
+        self.df_merged["DiffInfo"] = self.df_merged["PageSource_diff"].apply(self.get_diff_info)
 
-        if valid:
-            self._logger.info("Actual steps are the same as expected steps")
-            self.df_merged.apply(self.validate_steps_output, axis=1)
-            self.df_merged[:-1].apply(self.get_diff_info, axis=1)
-        else:
-            self._logger.info("Actual steps are not the same as expected steps")
+        # Image highlighting
+        self.df_merged.apply(lambda row: self.draw_boundaries(
+            row["DiffInfo"],
+            row[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_actual'],
+            row[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_expected'],
+        ), axis=1)
+        self.df_merged["actual_screenshot_filename"] = self.df_merged.apply(lambda row: f"actual_screenshot_step{row.name + 1}_{self.report_date}.png", axis=1)
+        self.df_merged["expected_screenshot_filename"] = self.df_merged.apply(lambda row: f"expected_screenshot_step{row.name + 1}_{self.report_date}.png", axis=1)
+        self.df_merged.apply(lambda row: self.save_step_images(
+            row[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_actual'],
+            row[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_expected'],
+            row["actual_screenshot_filename"],
+            row["expected_screenshot_filename"],
+        ), axis=1)
 
-        # Add last step as empty one, because there is no "page source after" available for the last step
-        self.diff_info.append([])
+        # # Add steps ids
+        # self.df_merged['StepId'] = [f'Step {i + 1}' for i in range(len(self.df_merged))]
+
+    # def validate_replay(self):
+    #     """Validate if the replay sequence is as expected"""
+    #     self.expected_steps = list(self.df_merged[f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_expected'])
+    #     self.actual_steps = list(self.df_merged[f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_actual'])
+    #
+    #     valid = self.validate_steps(self.expected_steps, self.actual_steps)
+    #
+    #     if valid:
+    #         self._logger.info("Actual steps are the same as expected steps")
+    #         self.df_merged.apply(self.validate_steps_output, axis=1)
+    #         self.df_merged[:-1].apply(self.get_diff_info, axis=1)
+    #     else:
+    #         self._logger.info("Actual steps are not the same as expected steps")
+    #
+    #     # Add last step as empty one, because there is no "page source after" available for the last step
+    #     self.diff_info.append([])
 
     def validate_steps(self, expected_steps: List[str], actual_steps: List[str]) -> bool:
         """Validate if the performed steps are the same"""
@@ -194,24 +233,24 @@ class SequencesDiff:
 
         return True
 
-    @staticmethod
-    def validate_actual_vs_expected_images(image_actual: str, image_expected: str) -> bool:
-        """Validate actual image vs expected image of the same step"""
-        # Convert images to arrays
-        image_expected_as_array = np.array(json.loads(image_expected), dtype=np.uint8)
-        image_actual_as_array = np.array(json.loads(image_actual), dtype=np.uint8)
+    # @staticmethod
+    # def validate_actual_vs_expected_images(image_actual: str, image_expected: str) -> bool:
+    #     """Validate actual image vs expected image of the same step"""
+    #     # Convert images to arrays
+    #     image_expected_as_array = np.array(json.loads(image_expected), dtype=np.uint8)
+    #     image_actual_as_array = np.array(json.loads(image_actual), dtype=np.uint8)
+    #
+    #     return np.array_equal(image_expected_as_array, image_actual_as_array)
 
-        return np.array_equal(image_expected_as_array, image_actual_as_array)
-
-    @staticmethod
-    def _convert_image_to_array(image: str) -> np.ndarray:
-        """Convert the given image from string to numpy ndarray"""
-        return np.array(json.loads(image), dtype=np.uint8)
-
-    @staticmethod
-    def _convert_array_image_to_pil(image: np.ndarray) -> PIL.Image.Image:
-        """Convert the given image from numpy ndarray to PIL image"""
-        return Image.fromarray(np.uint8(image))
+    # @staticmethod
+    # def _convert_image_to_array(image: str) -> np.ndarray:
+    #     """Convert the given image from string to numpy ndarray"""
+    #     return np.array(json.loads(image), dtype=np.uint8)
+    #
+    # @staticmethod
+    # def _convert_array_image_to_pil(image: np.ndarray) -> PIL.Image.Image:
+    #     """Convert the given image from numpy ndarray to PIL image"""
+    #     return Image.fromarray(np.uint8(image))
 
     def save_step_images(self, image_actual, image_expected, fn_actual, fn_expected):
         """Save step expected and actual images of the SUT"""
@@ -232,20 +271,20 @@ class SequencesDiff:
             self.verdicts.append("fail")
             self.comments.append("The actual screenshot is not the same as the expected screenshot")
 
-    def validate_steps_output(self, series: pd.Series):
-        """Validate if each step's output is as expected"""
-        step_index = int(series['StepId'].split()[1])
-        step_action = series[f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_actual']
-
-        print(f"Step {step_index} action: {step_action}")
-        image_expected = series[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_expected']
-        image_actual = series[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_actual']
-
-        # Validate actual vs expected images are the same
-        valid = self.validate_actual_vs_expected_images(image_actual, image_expected)
-
-        # Update verdicts and comments based on the step validation
-        self.update_verdicts_and_comments(valid)
+    # def validate_steps_output(self, series: pd.Series):
+    #     """Validate if each step's output is as expected"""
+    #     step_index = int(series['StepId'].split()[1])
+    #     step_action = series[f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_actual']
+    #
+    #     print(f"Step {step_index} action: {step_action}")
+    #     image_expected = series[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_expected']
+    #     image_actual = series[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_actual']
+    #
+    #     # Validate actual vs expected images are the same
+    #     valid = self.validate_actual_vs_expected_images(image_actual, image_expected)
+    #
+    #     # Update verdicts and comments based on the step validation
+    #     self.update_verdicts_and_comments(valid)
 
     @staticmethod
     def _get_outline_color(diff_type):
@@ -257,45 +296,58 @@ class SequencesDiff:
         if diff_type == 'InsertAttrib':
             return 'green'
 
-    def update_images(self, series: pd.Series):
-        """Update images with element boundaries where diff is applicable"""
-        step_index = int(series['StepId'].split()[1])
+    def draw_boundaries(self, info, image_actual_pil, image_expected_pil):
+        actual_element_boundaries = info['actual_element_boundaries']
+        expected_element_boundaries = info['expected_element_boundaries']
 
-        # Get actual and expected images
-        if step_index < len(self.df_merged):
-            image_expected = series[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_expected']
-            image_actual = series[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_actual']
-        else:
-            image_expected = series[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_expected']
-            image_actual = series[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_actual']
+        # Get outline color, based on diff type
+        outline_color = self._get_outline_color(info['actual_element']['type'])
 
-        # Convert images to arrays
-        image_actual_as_array = self._convert_image_to_array(image_actual)
-        image_expected_as_array = self._convert_image_to_array(image_expected)
+        # Draw boundaries
+        draw_image_actual = ImageDraw.Draw(image_actual_pil)
+        draw_image_expected = ImageDraw.Draw(image_expected_pil)
+        draw_image_actual.polygon(actual_element_boundaries, fill=None, outline=outline_color)
+        draw_image_expected.polygon(expected_element_boundaries, fill=None, outline=outline_color)
 
-        # Convert images from array to PIL
-        image_actual_pil = self._convert_array_image_to_pil(image_actual_as_array)
-        image_expected_pil = self._convert_array_image_to_pil(image_expected_as_array)
-
-        # Update images with boundaries if they are defined
-        if len(self.diff_info[step_index-1]) != 0:
-            for info in self.diff_info[step_index-1]:
-                actual_element_boundaries = info['actual_element_boundaries']
-                expected_element_boundaries = info['expected_element_boundaries']
-
-                # Get outline color, based on diff type
-                outline_color = self._get_outline_color(info['actual_element']['type'])
-
-                # Draw boundaries
-                draw_image_actual = ImageDraw.Draw(image_actual_pil)
-                draw_image_expected = ImageDraw.Draw(image_expected_pil)
-                draw_image_actual.polygon(actual_element_boundaries, fill=None, outline=outline_color)
-                draw_image_expected.polygon(expected_element_boundaries, fill=None, outline=outline_color)
-
-        # Save images
-        expected_image_filename = f"expected_screenshot_step{step_index}_{self.report_date}.png"
-        actual_image_filename = f"actual_screenshot_step{step_index}_{self.report_date}.png"
-        self.save_step_images(image_actual_pil, image_expected_pil, actual_image_filename, expected_image_filename)
+    # def update_images(self, series: pd.Series):
+    #     """Update images with element boundaries where diff is applicable"""
+    #     step_index = int(series['StepId'].split()[1])
+    #
+    #     # Get actual and expected images
+    #     if step_index < len(self.df_merged):
+    #         image_expected = series[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_expected']
+    #         image_actual = series[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_actual']
+    #     else:
+    #         image_expected = series[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_expected']
+    #         image_actual = series[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_actual']
+    #
+    #     # Convert images to arrays
+    #     image_actual_as_array = self._convert_image_to_array(image_actual)
+    #     image_expected_as_array = self._convert_image_to_array(image_expected)
+    #
+    #     # Convert images from array to PIL
+    #     image_actual_pil = self._convert_array_image_to_pil(image_actual_as_array)
+    #     image_expected_pil = self._convert_array_image_to_pil(image_expected_as_array)
+    #
+    #     # Update images with boundaries if they are defined
+    #     if len(self.diff_info[step_index-1]) != 0:
+    #         for info in self.diff_info[step_index-1]:
+    #             actual_element_boundaries = info['actual_element_boundaries']
+    #             expected_element_boundaries = info['expected_element_boundaries']
+    #
+    #             # Get outline color, based on diff type
+    #             outline_color = self._get_outline_color(info['actual_element']['type'])
+    #
+    #             # Draw boundaries
+    #             draw_image_actual = ImageDraw.Draw(image_actual_pil)
+    #             draw_image_expected = ImageDraw.Draw(image_expected_pil)
+    #             draw_image_actual.polygon(actual_element_boundaries, fill=None, outline=outline_color)
+    #             draw_image_expected.polygon(expected_element_boundaries, fill=None, outline=outline_color)
+    #
+    #     # Save images
+    #     expected_image_filename = f"expected_screenshot_step{step_index}_{self.report_date}.png"
+    #     actual_image_filename = f"actual_screenshot_step{step_index}_{self.report_date}.png"
+    #     self.save_step_images(image_actual_pil, image_expected_pil, actual_image_filename, expected_image_filename)
 
     def _write_to_report(self):
         """Write the report file using Jinja template"""
@@ -304,17 +356,11 @@ class SequencesDiff:
         env = Environment(loader=file_loader, autoescape=True)
         template = env.get_template("Log_template.html")
 
-        self.expected_images = [
-            f'expected_screenshot_step{i+1}_{self.report_date}' for i in range(len(self.expected_steps))
-        ]
-        self.actual_images = [
-            f'actual_screenshot_step{i+1}_{self.report_date}' for i in range(len(self.actual_steps))
-        ]
+        self.expected_images = self.df_merged["expected_screenshot_filename"]
+        self.actual_images = self.df_merged["actual_screenshot_filename"]
 
-        self._save_dataframe_to_csv()
-
-        # Update images
-        self.df_merged.apply(self.update_images, axis=1)
+        # # Update images
+        # self.df_merged.apply(self.update_images, axis=1)
 
         sequences_data = zip(self.expected_steps, self.actual_steps,
                              self.expected_images, self.actual_images,
@@ -343,11 +389,11 @@ class SequencesDiff:
         elem = page_root.findall(formatted_node)[0]
         return elem.attrib[attribute]
 
-    @staticmethod
-    def get_xml_encoding(xml: str) -> str:
-        """Get xml encoding from given xml"""
-        encoding = re.findall(r'encoding=\"(.+?)\"', xml)[0]
-        return encoding
+    # @staticmethod
+    # def get_xml_encoding(xml: str) -> str:
+    #     """Get xml encoding from given xml"""
+    #     encoding = re.findall(r'encoding=\"(.+?)\"', xml)[0]
+    #     return encoding
 
     def add_first_step_to_diff_info(self):
         """Move first step of diff_info from last element to first"""
@@ -410,60 +456,84 @@ class SequencesDiff:
 
         return diffs_as_dict
 
-    def get_diff_info(self, series: pd.Series):
-        """Get diff info for each step"""
-        step_diff_info = []
+    def get_diff_info(self, diff_results):
+        expected_element = diff_results['expected']
+        actual_element = diff_results['actual']
+        expected_x = expected_element['x']
+        actual_x = actual_element['x']
+        expected_y = expected_element['y']
+        actual_y = actual_element['y']
+        expected_width = expected_element['width']
+        actual_width = actual_element['width']
+        expected_height = expected_element['height']
+        actual_height = actual_element['height']
+        expected_box_coordinates = self._get_box_coordinates(expected_x, expected_y,
+                                                             expected_width, expected_height)
+        actual_box_coordinates = self._get_box_coordinates(actual_x, actual_y,
+                                                           actual_width, actual_height)
+        info = f'Actual ({actual_box_coordinates}) vs expected ({expected_box_coordinates})'
+        return {
+            'actual_element': actual_element,
+            'expected_element': expected_element,
+            'actual_element_boundaries': actual_box_coordinates,
+            'expected_element_boundaries': expected_box_coordinates,
+            'info': info
+        }
 
-        # First step data should be from after
-        # Last step data should be from before
-        # The rest of the steps data should be from after
-        step_index = int(series['StepId'].split()[1])
-        # step_action = series[f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_actual']
-
-        if step_index < len(self.df_merged):
-            expected_page_xml = series[f'{SequenceRecorder.COL_PAGE_SOURCE_AFTER}_expected']
-            actual_page_xml = series[f'{SequenceRecorder.COL_PAGE_SOURCE_AFTER}_actual']
-        else:
-            # We are not in the first step and we need to compare the Before page sources
-            expected_page_xml = series[f'{SequenceRecorder.COL_PAGE_SOURCE_BEFORE}_expected']
-            actual_page_xml = series[f'{SequenceRecorder.COL_PAGE_SOURCE_BEFORE}_actual']
-
-        expected_xml_encoding = self.get_xml_encoding(expected_page_xml)
-        actual_xml_encoding = self.get_xml_encoding(actual_page_xml)
-
-        # Encode to fix error ValueError: Unicode strings with encoding declaration are not supported.
-        # Please use bytes input or XML fragments without declaration.
-        expected_page_xml_encoded = expected_page_xml.encode(expected_xml_encoding)
-        actual_page_xml_encoded = actual_page_xml.encode(actual_xml_encoding)
-
-        diff_results = self.extract_diffs_as_dict(expected_page_xml_encoded, actual_page_xml_encoded)
-
-        for k, v in diff_results['actual'].items():
-            expected_element = diff_results['expected'][k]
-            actual_element = diff_results['actual'][k]
-            expected_x = expected_element['x']
-            actual_x = actual_element['x']
-            expected_y = expected_element['y']
-            actual_y = actual_element['y']
-            expected_width = expected_element['width']
-            actual_width = actual_element['width']
-            expected_height = expected_element['height']
-            actual_height = actual_element['height']
-            expected_box_coordinates = self._get_box_coordinates(expected_x, expected_y,
-                                                                 expected_width, expected_height)
-            actual_box_coordinates = self._get_box_coordinates(actual_x, actual_y,
-                                                               actual_width, actual_height)
-            info = f'Actual ({actual_box_coordinates}) vs expected ({expected_box_coordinates})'
-            info_dict = {
-                'actual_element': actual_element,
-                'expected_element': expected_element,
-                'actual_element_boundaries': actual_box_coordinates,
-                'expected_element_boundaries': expected_box_coordinates,
-                'info': info
-            }
-            step_diff_info.append(info_dict)
-
-        self.diff_info.append(step_diff_info)
+    # def get_diff_info(self, series: pd.Series):
+    #     """Get diff info for each step"""
+    #     step_diff_info = []
+    #
+    #     # First step data should be from after
+    #     # Last step data should be from before
+    #     # The rest of the steps data should be from after
+    #     step_index = int(series['StepId'].split()[1])
+    #     # step_action = series[f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_actual']
+    #
+    #     if step_index < len(self.df_merged):
+    #         expected_page_xml = series[f'{SequenceRecorder.COL_PAGE_SOURCE_AFTER}_expected']
+    #         actual_page_xml = series[f'{SequenceRecorder.COL_PAGE_SOURCE_AFTER}_actual']
+    #     else:
+    #         # We are not in the first step and we need to compare the Before page sources
+    #         expected_page_xml = series[f'{SequenceRecorder.COL_PAGE_SOURCE_BEFORE}_expected']
+    #         actual_page_xml = series[f'{SequenceRecorder.COL_PAGE_SOURCE_BEFORE}_actual']
+    #
+    #     expected_xml_encoding = self.get_xml_encoding(expected_page_xml)
+    #     actual_xml_encoding = self.get_xml_encoding(actual_page_xml)
+    #
+    #     # Encode to fix error ValueError: Unicode strings with encoding declaration are not supported.
+    #     # Please use bytes input or XML fragments without declaration.
+    #     expected_page_xml_encoded = expected_page_xml.encode(expected_xml_encoding)
+    #     actual_page_xml_encoded = actual_page_xml.encode(actual_xml_encoding)
+    #
+    #     diff_results = self.extract_diffs_as_dict(expected_page_xml_encoded, actual_page_xml_encoded)
+    #
+    #     for k, v in diff_results['actual'].items():
+    #         expected_element = diff_results['expected'][k]
+    #         actual_element = diff_results['actual'][k]
+    #         expected_x = expected_element['x']
+    #         actual_x = actual_element['x']
+    #         expected_y = expected_element['y']
+    #         actual_y = actual_element['y']
+    #         expected_width = expected_element['width']
+    #         actual_width = actual_element['width']
+    #         expected_height = expected_element['height']
+    #         actual_height = actual_element['height']
+    #         expected_box_coordinates = self._get_box_coordinates(expected_x, expected_y,
+    #                                                              expected_width, expected_height)
+    #         actual_box_coordinates = self._get_box_coordinates(actual_x, actual_y,
+    #                                                            actual_width, actual_height)
+    #         info = f'Actual ({actual_box_coordinates}) vs expected ({expected_box_coordinates})'
+    #         info_dict = {
+    #             'actual_element': actual_element,
+    #             'expected_element': expected_element,
+    #             'actual_element_boundaries': actual_box_coordinates,
+    #             'expected_element_boundaries': expected_box_coordinates,
+    #             'info': info
+    #         }
+    #         step_diff_info.append(info_dict)
+    #
+    #     self.diff_info.append(step_diff_info)
 
     @staticmethod
     def _get_box_coordinates(x: str, y: str, w: str, h: str) -> List[Tuple[int, int]]:
