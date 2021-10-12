@@ -238,7 +238,7 @@ class SequencesDiff:
             self.comments.insert(0, "The actual screenshot is not the same as the expected screenshot")
 
     def write_to_report(self):
-        template_folder = os.path.abspath(os.path.join(__file__, "../../templates"))
+        template_folder = os.path.abspath(os.path.join(__file__, "../templates"))
         file_loader = FileSystemLoader(template_folder)
         env = Environment(loader=file_loader, autoescape=True)
         template = env.get_template("Log_template.html")
