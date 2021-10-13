@@ -25,9 +25,14 @@ def reset() -> WebDriver:
             "platformName": "Windows",
             "deviceName": "WindowsPC",
         }
+        driver = webdriver.Remote(CONFIG["driver"]["command_executor"], capabilities)
 
-    driver = webdriver.Remote(CONFIG["driver"]["command_executor"], capabilities)
     if CONFIG["driver"]["platform"] == "web":
+        web_options = webdriver.ChromeOptions()
+        web_options.add_argument("--disable-dev-shm-usage")
+        web_options.add_argument("--window-size=1980,1080")
+        web_options.add_argument("--headless")
+        driver = webdriver.Remote(CONFIG["driver"]["command_executor"], capabilities, options=web_options)
         driver.get(CONFIG["driver"]["url"])
 
     # if self.driver is not None:
