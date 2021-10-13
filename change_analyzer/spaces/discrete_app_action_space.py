@@ -10,6 +10,7 @@ from selenium.webdriver.remote.webelement import WebElement
 
 from change_analyzer.spaces.actions.app_action import AppAction
 from change_analyzer.spaces.actions.click_app_action import ClickAppAction
+from change_analyzer.utils.elements import iou
 
 
 class DiscreteAppActionSpace(Space):
@@ -62,9 +63,9 @@ class DiscreteAppActionSpace(Space):
                 if self._is_el_clickable(el)
             }
             for el0, el1 in itertools.combinations(self.actionable_elements, 2):
-                if self._overlap_percentage(el0, el1) > self.OVERLAPING_PERCENTAGE:
+                if iou(el0.rect, el1.rect) > self.OVERLAPING_PERCENTAGE:
                     self.actionable_elements.remove(el1)
-                if self._overlap_percentage(el1, el0) > self.OVERLAPING_PERCENTAGE:
+                if iou(el1.rect, el0.rect) > self.OVERLAPING_PERCENTAGE:
                     self.actionable_elements.remove(el0)
         except Exception as e:
             self._logger.info(
@@ -98,12 +99,6 @@ class DiscreteAppActionSpace(Space):
         return (
             isinstance(other, DiscreteAppActionSpace) and self.actions == other.actions
         )
-
-    def _overlap_percentage(self, el0, el1) -> float:
-        # TODO check that the elements are not overlaping
-        # self._logger.info(f"checking rects: {el0.rect}, {el1.rect}")
-        # https://stackoverflow.com/a/42874377 or more compact: https://stackoverflow.com/a/57247833
-        return 0
 
     def _is_el_clickable(self, el: WebElement) -> bool:
         try:

@@ -20,7 +20,8 @@ REQUIRE = [
     "jinja2",
     "pandas",
     "numpy",
-    "matplotlib"
+    "matplotlib",
+    "shapely",
 ]
 DEV_REQUIRE = [
     "black",
