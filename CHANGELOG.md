@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.2 (2021-10-13)
+### Fix
+* Fix large width for report images on web platform ([`a33aafa`](https://github.com/F-Secure/change-analyzer/commit/a33aafa09fa4bd027fbb663afb511c240e777172))
+
+### Documentation
+* Fix of acknowledgement section to README.md ([`6379688`](https://github.com/F-Secure/change-analyzer/commit/6379688ba3eec11239002559e7efd1db4ece7f16))
+* Added acknowledgement section to README.md ([`1f9f0b7`](https://github.com/F-Secure/change-analyzer/commit/1f9f0b7959fe47f6b84c3d0b08e1f68833b1c332))
+
 ## v0.2.1 (2021-10-13)
 ### Fix
 * Fix dataframe merge ([`1c41875`](https://github.com/F-Secure/change-analyzer/commit/1c41875e2fbf12b0ed78590c4e40a8732000e6cd))
