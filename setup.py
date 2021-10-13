@@ -20,7 +20,8 @@ REQUIRE = [
     "jinja2",
     "pandas",
     "numpy",
-    "matplotlib"
+    "matplotlib",
+    "xmldiff"
 ]
 DEV_REQUIRE = [
     "black",
