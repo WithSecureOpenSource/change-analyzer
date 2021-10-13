@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.1 (2021-10-13)
+### Fix
+* Fix dataframe merge ([`1c41875`](https://github.com/F-Secure/change-analyzer/commit/1c41875e2fbf12b0ed78590c4e40a8732000e6cd))
+
 ## v0.2.0 (2021-10-12)
 ### Feature
 * Add highlighting diff on elements based on xmldiff ([`00c0c53`](https://github.com/F-Secure/change-analyzer/commit/00c0c53a82662546f317e44c863bf4a8d58d80c9))
