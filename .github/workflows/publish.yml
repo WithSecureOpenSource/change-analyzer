@@ -27,19 +27,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-#      - name: Download previous result info
-#        uses: dawidd6/action-download-artifact@v2
-#        with:
-#          github_token: ${{secrets.GITHUB_TOKEN}}
-#          workflow: publish.yml
-#          workflow_conclusion: success
-#          # Optional, will use the branch
-#          # branch: master
-#          name: next_result
-#          path: ./
-#          check_artifacts: true
-#      - name: Set environment variable
-#        run: echo "PREVIOUS_SEQUENCE=$(cat ./next_result.txt)" >> $GITHUB_ENV
+      - name: Download previous result info
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: publish.yml
+          workflow_conclusion: success
+          # Optional, will use the branch
+          # branch: master
+          name: next_result
+          path: ./
+          check_artifacts: true
+      - name: Set environment variable
+        run: echo "PREVIOUS_SEQUENCE=$(cat ./next_result.txt)" >> $GITHUB_ENV
       - name: Download previous result
         uses: dawidd6/action-download-artifact@v2
         with:
@@ -48,8 +48,8 @@ jobs:
           workflow_conclusion: success
           # Optional, will use the branch
           # branch: master
-          name: results
-          path: ./previous_results
+          name: results/recordings/${{ env.PREVIOUS_SEQUENCE }}
+          path: ./previous_results/recordings/
           check_artifacts: true
       - name: Set up Docker Buildx
         id: buildx
