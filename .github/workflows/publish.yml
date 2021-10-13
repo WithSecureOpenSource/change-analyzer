@@ -39,7 +39,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: results
-          path: /home/localtester/change-analyzer/recordings
+          path: ./docker_results
 
   release:
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
