@@ -54,7 +54,7 @@ jobs:
       - name: Copy necessary artifacts
         run: |
           mkdir -p previous_results/recordings
-          cp -r ./all_previous_results/${{ env.PREVIOUS_SEQUENCE }} ./previous_results/recordings
+          cp -r ./all_previous_results/recordings/${{ env.PREVIOUS_SEQUENCE }} ./previous_results/recordings
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v1
