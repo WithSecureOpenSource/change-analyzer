@@ -54,9 +54,10 @@ fi
 # Replay
 if [ "$REPLAY" = "1" ] && [ "$CSV" = "1" ]; then
     echo "REPLAY IMPORTED CSV"
-    FIRST_RECORD=$(ls -l "$CSV_PATH"/recordings|tail -n1|cut --delimiter=' ' -f9)
-    FIRST_RECORD="$CSV_PATH/recordings/$FIRST_RECORD"
-    ca-run --config input.ini --csv_folder="$FIRST_RECORD"
+    mkdir -p /home/localtester/change-analyzer/recordings
+    cp -r "$CSV_PATH"/recordings /home/localtester/change-analyzer/
+    FIRST_RECORD=$(ls -l recordings|tail -n1|cut --delimiter=' ' -f9)
+    ca-run --config input.ini --csv_folder=recordings/"$FIRST_RECORD"
     SECOND_RECORD=$(ls -l recordings|tail -n1|cut --delimiter=' ' -f9)
 elif [ "$REPLAY" = "1" ]; then
     echo "REPLAY"
