@@ -58,13 +58,7 @@ class SequencesDiff:
         }
         first_step_df = pd.DataFrame([first_step_data])
         self.df_merged = pd.concat([first_step_df, self.df_merged], ignore_index=True)
-        self.df_merged.to_csv("df.csv", index=False)
-
-        # TODO: remove? not in use anywhere
-        # self.df_merged["StepVerdict"] = self.df_merged.apply(
-        #     lambda row: row[f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_expected'] is row[f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_actual'],
-        #     axis=1
-        # )
+        self.df_merged.to_csv(os.path.join(self.report_folder, 'df.csv'), index=False)
 
         # Images
         img_col = [col for col in self.df_merged.columns if "image" in col.lower()]
