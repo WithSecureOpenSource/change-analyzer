@@ -10,6 +10,7 @@
     - [6. Compare results](#6-compare-results)
   - [Available commands](#available-commands)
   - [Configuration files](#configuration-files)
+  - [Acknowledgement](#acknowledgement)
 
 ## Setup and usage in Windows environment
 ### 1. Download required 3rd party softwares: 
@@ -106,4 +107,11 @@ Example .ini file using WinAppDriver.exe and Windows platform:
 ```
 Port of command_executor needs to match the driver's (ex. WinAppDriver/chromedriver) port.
 
+## Acknowledgement
+The package was developed by [F-Secure Corporation][f-secure] and [University of Helsinki][hy] in scope of [IVVES project][ivves]. This work was labelled by [ITEA3][itea3] and funded by local authorities under grant agreement “ITEA-2019-18022-IVVES”
+
 [contributing]: CONTRIBUTING.md
+[ivves]: http://ivves.eu/
+[itea3]: https://itea3.org/
+[f-secure]: https://www.f-secure.com/en
+[hy]: https://www.helsinki.fi/en/computer-science
