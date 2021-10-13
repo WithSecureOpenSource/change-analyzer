@@ -100,51 +100,53 @@ td, th {
 	margin-left: -5px;
 }
 </style>
-  </head>
-    <h2>Change analyzer report</h2>
-	<div><b>Expected sequence:</b> <span class="sequence-id">{{ actual_sequence_id }}</span> ({{ sequence1_date }})</div>
-	<div><b>Actual sequence:</b> <span class="sequence-id">{{ expected_sequence_id }}</span> ({{ sequence2_date }})</div>
-    <br>
-	<div><b>Date:</b> {{ report_date }}</div>
-    <br>
+</head>
+<body>
+	<div class="container-fluid">
+		<h2>Change analyzer report</h2>
+		<div><b>Expected sequence:</b> <span class="sequence-id">{{ actual_sequence_id }}</span> ({{ sequence1_date }})</div>
+		<div><b>Actual sequence:</b> <span class="sequence-id">{{ expected_sequence_id }}</span> ({{ sequence2_date }})</div>
+		<br>
+		<div><b>Date:</b> {{ report_date }}</div>
+		<br>
 
-    <div class="toggle-div" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="{{ aria_controls }}"><a href="#" class="fill-div"><span class="toggle-a">Toggle all steps</span></a></div>
+		<div class="toggle-div" data-bs-toggle="collapse" data-bs-target=".multi-collapse" aria-expanded="false" aria-controls="{{ aria_controls }}"><a href="#" class="fill-div"><span class="toggle-a">Toggle all steps</span></a></div>
 
-    {% for expected_step, actual_step, expected_image, actual_image, verdict, comment, diff_info in sequences_data %}
-    <div class="custom-row" data-bs-toggle="collapse" data-bs-target="#step{{ loop.index }}" aria-expanded="false" aria-controls="step{{ loop.index }}">
-		<button class="step {{ verdict }}" type="button">Step {{ loop.index }}</button>
-		<span class="action">{{ expected_step }}</span>
-	</div>
-
-	<div class="row div-margins">
-	  <div class="col">
-		<div class="collapse multi-collapse" id="step{{ loop.index }}">
-		  <div>
-			  <span class="step info">Info</span>
-			  <span class="comment">{{ comment }}</span>
-		  </div>
-		  <table class="table table-bordered">
-			  <thead>
-				<tr>
-				  <th scope="col">Expected screenshot</th>
-				  <th scope="col">Actual screenshot</th>
-				</tr>
-			  </thead>
-			  <tbody>
-				<tr>
-				  <td><img src="{{ expected_image }}.png" alt=""></td>
-				  <td><img src="{{ actual_image }}.png" alt=""></td>
-				</tr>
-			  </tbody>
-		</table>
+		{% for expected_step, actual_step, expected_image, actual_image, verdict, comment in sequences_data %}
+		<div class="custom-row" data-bs-toggle="collapse" data-bs-target="#step{{ loop.index }}" aria-expanded="false" aria-controls="step{{ loop.index }}">
+			<button class="step {{ verdict }}" type="button">Step {{ loop.index }}</button>
+			<span class="action">{{ expected_step }}</span>
 		</div>
-	  </div>
-	 </div>
-    {% endfor %}
 
+		<div class="row div-margins">
+		  <div class="col">
+			<div class="collapse multi-collapse" id="step{{ loop.index }}">
+			  <div>
+				  <span class="step info">Info</span>
+				  <span class="comment">{{ comment }}</span>
+			  </div>
+			  <table class="table table-bordered">
+				  <thead>
+					<tr>
+					  <th scope="col">Expected screenshot</th>
+					  <th scope="col">Actual screenshot</th>
+					</tr>
+				  </thead>
+				  <tbody>
+					<tr>
+					  <td><img src="{{ expected_image }}" alt=""></td>
+					  <td><img src="{{ actual_image }}" alt=""></td>
+					</tr>
+				  </tbody>
+			</table>
+			</div>
+		  </div>
+		 </div>
+		{% endfor %}
+	</div>
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
+</body>
 </html>
 
 
