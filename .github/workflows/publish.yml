@@ -27,7 +27,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Download artifact
+#      - name: Download previous result info
+#        uses: dawidd6/action-download-artifact@v2
+#        with:
+#          github_token: ${{secrets.GITHUB_TOKEN}}
+#          workflow: publish.yml
+#          workflow_conclusion: success
+#          # Optional, will use the branch
+#          # branch: master
+#          name: next_result
+#          path: ./
+#          check_artifacts: true
+#      - name: Set environment variable
+#        run: echo "PREVIOUS_SEQUENCE=$(cat ./next_result.txt)" >> $GITHUB_ENV
+      - name: Download previous result
         uses: dawidd6/action-download-artifact@v2
         with:
           github_token: ${{secrets.GITHUB_TOKEN}}
@@ -47,10 +60,15 @@ jobs:
           docker run -v $(pwd)/previous_results:/home/localtester/previous_results:Z --security-opt seccomp=./chrome.json changeanalyzer "--ini=[driver]\ncommand_executor=http://127.0.0.1:9515\nplatform=web\nurl=https://learn.ivves.eu/" -r -c --csv=/home/localtester/previous_results
           mkdir docker_results
           docker cp $(docker ps -alq):/home/localtester/change-analyzer/recordings ./docker_results
+          docker cp $(docker ps -alq):/home/localtester/next_result.txt ./next_result.txt
       - uses: actions/upload-artifact@v2
         with:
           name: results
           path: ./docker_results
+      - uses: actions/upload-artifact@v2
+        with:
+          name: next_result
+          path: ./next_result.txt
 
   release:
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'

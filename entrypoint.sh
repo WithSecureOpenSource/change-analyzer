@@ -59,11 +59,13 @@ if [ "$REPLAY" = "1" ] && [ "$CSV" = "1" ]; then
     FIRST_RECORD=$(ls -l recordings|tail -n1|cut --delimiter=' ' -f9)
     ca-run --config input.ini --csv_folder=recordings/"$FIRST_RECORD"
     SECOND_RECORD=$(ls -l recordings|tail -n1|cut --delimiter=' ' -f9)
+    echo "$SECOND_RECORD" > /home/localtester/next_result.txt
 elif [ "$REPLAY" = "1" ]; then
     echo "REPLAY"
     FIRST_RECORD=$(ls -l recordings|tail -n1|cut --delimiter=' ' -f9)
     ca-run --config input.ini --csv_folder=recordings/"$FIRST_RECORD"
     SECOND_RECORD=$(ls -l recordings|tail -n1|cut --delimiter=' ' -f9)
+    echo "$SECOND_RECORD" > /home/localtester/next_result.txt
 fi
 
 # Compare
