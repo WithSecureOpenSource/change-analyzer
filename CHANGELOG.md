@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.3 (2021-10-14)
+### Fix
+* Fix setup.py readme import issue ([`5d5597c`](https://github.com/F-Secure/change-analyzer/commit/5d5597c099d8729df7d84a779acfcce9eb2b5941))
+
 ## v0.2.2 (2021-10-13)
 ### Fix
 * Fix large width for report images on web platform ([`a33aafa`](https://github.com/F-Secure/change-analyzer/commit/a33aafa09fa4bd027fbb663afb511c240e777172))
