@@ -4,4 +4,3 @@
 *.egg-info
 recordings
 __pycache__?
-docker_results
