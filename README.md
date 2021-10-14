@@ -10,6 +10,7 @@
     - [6. Compare results](#6-compare-results)
   - [Available commands](#available-commands)
   - [Configuration files](#configuration-files)
+  - [Acknowledgement](#acknowledgement)
 
 ## Setup and usage in Windows environment
 ### 1. Download required 3rd party softwares: 
@@ -28,10 +29,20 @@
   * <a href="https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development#accessing-settings-for-developers">Official documentation</a> if needed.
 
 ### 3. Create virtual environment
+#### 3.1. Virtualenv option 
 Requires Python 3.7 or newer installed and added to PATH variable.
 
 * Run ```install.bat``` located in source code root directory.
   * This script will install necessary dependencies defined in setup.py.
+
+#### 3.2. Conda option
+If preferred, it is also possible to use a Conda environment.
+
+* Open an Anaconda terminal and go to project's main folder
+* Run `conda env create -f requirements.yml`
+* The above command will create the conda environment `change_analyzer` including all the needed dependencies
+* In order to use the Conda environment, you can either attach it to a project within your favorite IDE, or activate
+it on command line with `conda activate change_analyzer`
 
 ### 4. Create configuration file
 It's mandatory to tell change-analyzer how to execute testing. For this reason .ini configuration is needed. Create configure now before running the software.
@@ -96,4 +107,10 @@ Example .ini file using WinAppDriver.exe and Windows platform:
 ```
 Port of command_executor needs to match the driver's (ex. WinAppDriver/chromedriver) port.
 
+## Acknowledgement
+The package was developed by [F-Secure Corporation][f-secure] in scope of [IVVES project][ivves]. This work was labelled by [ITEA3][itea3] and funded by local authorities under grant agreement 'ITEA-2019-18022-IVVES'.
+
 [contributing]: CONTRIBUTING.md
+[ivves]: http://ivves.eu/
+[itea3]: https://itea3.org/
+[f-secure]: https://www.f-secure.com/en

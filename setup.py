@@ -20,7 +20,8 @@ REQUIRE = [
     "jinja2",
     "pandas",
     "numpy",
-    "matplotlib"
+    "matplotlib",
+    "xmldiff"
 ]
 DEV_REQUIRE = [
     "black",
@@ -58,6 +59,7 @@ setup(
     },
     install_requires=REQUIRE,
     extras_require={"dev": DEV_REQUIRE},
+    include_package_data=True,
     classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
