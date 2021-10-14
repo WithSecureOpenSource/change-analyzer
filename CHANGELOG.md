@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.4 (2021-10-14)
+### Fix
+* Fix the case when xmls were nan ([`df6d18e`](https://github.com/F-Secure/change-analyzer/commit/df6d18e84410384f8cdda088df67e0c2c6b2bedb))
+
 ## v0.2.3 (2021-10-14)
 ### Fix
 * Fix setup.py readme import issue ([`5d5597c`](https://github.com/F-Secure/change-analyzer/commit/5d5597c099d8729df7d84a779acfcce9eb2b5941))
