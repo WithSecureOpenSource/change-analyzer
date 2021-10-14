@@ -185,13 +185,17 @@ class SequencesDiff:
 
     def _extract_diffs_as_dict(self, expected_xml: str, actual_xml: str) -> Dict:
         """Extract diffs as dictionary, using expected and actual approach"""
-        expected_root = ET.ElementTree(ET.fromstring(expected_xml)).getroot()
-        actual_root = ET.ElementTree(ET.fromstring(actual_xml)).getroot()
-
         diffs_as_dict = {
             'expected': {},
             'actual': {}
         }
+        # expected_xml and actual_xml can sometimes be nan, giving a TypeError
+        try:
+            expected_root = ET.ElementTree(ET.fromstring(expected_xml)).getroot()
+            actual_root = ET.ElementTree(ET.fromstring(actual_xml)).getroot()
+        except TypeError:
+            return diffs_as_dict
+
         for diff in diffmain.diff_texts(expected_xml, actual_xml):
             if 'ProcessId' not in diff and 'RuntimeId' not in diff:
                 diff_type = str(diff).split("(")[0]
