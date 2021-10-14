@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.0 (2021-10-14)
+### Feature
+* Enable github releasing ([`c42060a`](https://github.com/F-Secure/change-analyzer/commit/c42060a3c1b5446240a64ba8b5f3cd96b9ee8319))
+
 ## v0.3.0 (2021-10-14)
 ### Feature
 * Save merged dataframe as zip ([`54a96c5`](https://github.com/F-Secure/change-analyzer/commit/54a96c57c8eceb029315957be4adf8684cc2bc9d))
