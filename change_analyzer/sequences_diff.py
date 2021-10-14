@@ -46,6 +46,9 @@ class SequencesDiff:
         )
 
         # Add the first step into DF, based on current first row of DF
+        first_step_action = 'open the Application'
+        if 'html' in self.df_merged[f'{SequenceRecorder.COL_PAGE_SOURCE_BEFORE}_actual'][0]:
+            first_step_action = 'open the Website URL'
         first_step_data = {
             f'{SequenceRecorder.COL_SEQUENCE_ID}_expected': self.df_merged[f'{SequenceRecorder.COL_SEQUENCE_ID}_expected'][0],
             f'{SequenceRecorder.COL_SEQUENCE_ID}_actual': self.df_merged[f'{SequenceRecorder.COL_SEQUENCE_ID}_actual'][0],
@@ -53,8 +56,15 @@ class SequencesDiff:
             f'{SequenceRecorder.COL_PAGE_SOURCE_AFTER}_expected': self.df_merged[f'{SequenceRecorder.COL_PAGE_SOURCE_BEFORE}_expected'][0],
             f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_actual': self.df_merged[f'{SequenceRecorder.COL_ACTION_IMAGE_BEFORE}_actual'][0],
             f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_expected': self.df_merged[f'{SequenceRecorder.COL_ACTION_IMAGE_BEFORE}_expected'][0],
-            f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_expected': 'open the Application',
-            f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_actual': 'open the Application',
+            f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_expected': first_step_action,
+            f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_actual': first_step_action,
+            f'{SequenceRecorder.COL_TIMESTAMP}_expected': 0,
+            f'{SequenceRecorder.COL_TIMESTAMP}_actual': 0,
+            f'{SequenceRecorder.COL_PAGE_SOURCE_BEFORE}_actual': '<?xml version="1.0" encoding="UTF-8"?><metadata></metadata>',
+            f'{SequenceRecorder.COL_PAGE_SOURCE_BEFORE}_expected': '<?xml version="1.0" encoding="UTF-8"?><metadata></metadata>',
+            f'{SequenceRecorder.COL_ACTION_IMAGE_BEFORE}_actual': Image.new('RGB', (1, 1)),
+            f'{SequenceRecorder.COL_ACTION_IMAGE_BEFORE}_expected': Image.new('RGB', (1, 1))
+
         }
         first_step_df = pd.DataFrame([first_step_data])
         self.df_merged = pd.concat([first_step_df, self.df_merged], ignore_index=True)
