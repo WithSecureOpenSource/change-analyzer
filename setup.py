@@ -47,6 +47,7 @@ setup(
     long_description=_read_long_description(),
     long_description_content_type="text/markdown",
     author="Matvey Pashkovskiy, Sorin Patrasoiu, Joona Oikarinen",
+    author_email="",
     url=f"https://stash.f-secure.com/users/pashma/repos/{NAME}",
     platforms="any",
     version=VERSION_NUMBER,
