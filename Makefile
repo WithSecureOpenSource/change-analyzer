@@ -16,8 +16,11 @@ clean:
 publish: install
 	. $(VENV_DIR)/bin/activate; $(VENV_DIR)/bin/semantic-release publish \
 		-D version_variable=change_analyzer/__init__.py:__version__ \
-		-D upload_to_release=false \
-		-D upload_to_pypi=false
+		-D upload_to_release=true \
+		-D upload_to_pypi=false \
+		--verbosity=DEBUG
 
 print-version: install
-	. $(VENV_DIR)/bin/activate; $(VENV_DIR)/bin/semantic-release print-version -D version_variable=change_analyzer/__init__.py:__version__
+	. $(VENV_DIR)/bin/activate; \
+	$(VENV_DIR)/bin/semantic-release print-version \
+		-D version_variable=change_analyzer/__init__.py:__version__
