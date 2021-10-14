@@ -58,7 +58,7 @@ class SequencesDiff:
         }
         first_step_df = pd.DataFrame([first_step_data])
         self.df_merged = pd.concat([first_step_df, self.df_merged], ignore_index=True)
-        self.df_merged.to_csv(os.path.join(self.report_folder, 'df.csv'), index=False)
+        self.df_merged.to_csv(os.path.join(self.report_folder, 'df.csv.zip'), index=False)
 
         # Images
         img_col = [col for col in self.df_merged.columns if "image" in col.lower()]
