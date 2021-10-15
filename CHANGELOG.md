@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.2 (2021-10-15)
+### Fix
+* Add config for semantic-release ([`7027f1f`](https://github.com/F-Secure/change-analyzer/commit/7027f1f7a4c77695fd5dfe75062c3ebb46ece78b))
+
+## v0.4.1 (2021-10-15)
+### Fix
+* Add python3-setuptools package to publish action ([`4d3f0f3`](https://github.com/F-Secure/change-analyzer/commit/4d3f0f3af0aa73661251664bab5ab1bfdf42bbf1))
+
+## v0.4.0 (2021-10-14)
+### Feature
+* Enable github releasing ([`c42060a`](https://github.com/F-Secure/change-analyzer/commit/c42060a3c1b5446240a64ba8b5f3cd96b9ee8319))
+
 ## v0.3.0 (2021-10-14)
 ### Feature
 * Save merged dataframe as zip ([`54a96c5`](https://github.com/F-Secure/change-analyzer/commit/54a96c57c8eceb029315957be4adf8684cc2bc9d))
