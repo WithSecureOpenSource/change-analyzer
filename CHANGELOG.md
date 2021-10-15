@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.0 (2021-10-15)
+### Feature
+* Add dockerfile and dependencies ([`ad640c7`](https://github.com/F-Secure/change-analyzer/commit/ad640c74d85f3b63a489888d8fe13d86b9d62499))
+
 ## v0.4.2 (2021-10-15)
 ### Fix
 * Add config for semantic-release ([`7027f1f`](https://github.com/F-Secure/change-analyzer/commit/7027f1f7a4c77695fd5dfe75062c3ebb46ece78b))
