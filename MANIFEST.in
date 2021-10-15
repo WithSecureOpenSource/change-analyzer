@@ -1,1 +1,2 @@
 include change_analyzer/templates/*.html
+include change_analyzer/tests/400x400.png
