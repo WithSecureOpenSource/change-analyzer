@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.2 (2021-10-15)
+### Fix
+* Add config for semantic-release ([`7027f1f`](https://github.com/F-Secure/change-analyzer/commit/7027f1f7a4c77695fd5dfe75062c3ebb46ece78b))
+
 ## v0.4.1 (2021-10-15)
 ### Fix
 * Add python3-setuptools package to publish action ([`4d3f0f3`](https://github.com/F-Secure/change-analyzer/commit/4d3f0f3af0aa73661251664bab5ab1bfdf42bbf1))
