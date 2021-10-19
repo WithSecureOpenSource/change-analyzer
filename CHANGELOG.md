@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.1 (2021-10-19)
+### Fix
+* Add various fixes based on review comments ([`fd06d5d`](https://github.com/F-Secure/change-analyzer/commit/fd06d5d398508200036f9943c5a61d4b58460680))
+
 ## v0.5.0 (2021-10-15)
 ### Feature
 * Add dockerfile and dependencies ([`ad640c7`](https://github.com/F-Secure/change-analyzer/commit/ad640c74d85f3b63a489888d8fe13d86b9d62499))
