@@ -21,7 +21,8 @@ REQUIRE = [
     "pandas",
     "numpy",
     "matplotlib",
-    "xmldiff"
+    "xmldiff",
+    "beautifulsoup4"
 ]
 DEV_REQUIRE = [
     "black",
