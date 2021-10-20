@@ -186,6 +186,17 @@ class SequencesDiff:
             f.write(html_template_string)
 
     @staticmethod
+    def _diff_is_valid(diff: str) -> bool:
+        """Check if diff doesn't contain ignored diffs
+        Currently we don't check a diff further if it contains the following strings:
+            - ProcessId
+            - RuntimeId
+            - script
+        """
+        ignored_diffs = ['ProcessId', 'RuntimeId', 'script']
+        return any(ignored_diff in diff for ignored_diff in ignored_diffs)
+
+    @staticmethod
     def _get_attribute_value_based_on_node(page_root: ET.Element, node: str, attribute: str) -> str:
         """Get attribute value for specific node from given page source"""
         formatted_node = "./" + "/".join(node.split("/")[2::])
@@ -208,8 +219,7 @@ class SequencesDiff:
         actual_root = ET.ElementTree(ET.fromstring(actual_xml)).getroot()
 
         for diff in diffmain.diff_texts(expected_xml, actual_xml):
-            if 'ProcessId' not in diff and 'RuntimeId' not in diff:
-                print(diff)
+            if self._diff_is_valid(str(diff)):
                 diff_type = str(diff).split("(")[0]
                 expected_value = self._get_attribute_value_based_on_node(expected_root, diff.node, diff.name)
                 if diff.node not in diffs_as_dict['actual'].keys():
