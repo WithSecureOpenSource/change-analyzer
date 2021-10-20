@@ -194,7 +194,7 @@ class SequencesDiff:
             - script
         """
         ignored_diffs = ['ProcessId', 'RuntimeId', 'script']
-        return any(ignored_diff in diff for ignored_diff in ignored_diffs)
+        return not any(ignored_diff in diff for ignored_diff in ignored_diffs)
 
     @staticmethod
     def _get_attribute_value_based_on_node(page_root: ET.Element, node: str, attribute: str) -> str:
