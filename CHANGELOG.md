@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.0 (2021-10-20)
+### Feature
+* Add validation for each diff ([`b2160e0`](https://github.com/F-Secure/change-analyzer/commit/b2160e09bf313ef4aa3569e24540c4ba82f59783))
+
 ## v0.5.1 (2021-10-19)
 ### Fix
 * Add various fixes based on review comments ([`fd06d5d`](https://github.com/F-Secure/change-analyzer/commit/fd06d5d398508200036f9943c5a61d4b58460680))
