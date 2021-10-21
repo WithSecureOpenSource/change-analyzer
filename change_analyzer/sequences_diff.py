@@ -19,6 +19,9 @@ from change_analyzer.wrappers.sequence_recorder import SequenceRecorder
 
 
 class SequencesDiff:
+
+    SUPPORTED_DIFFS = ['UpdateAttrib']
+
     def __init__(self, sequence1_file: str, sequence2_file: str) -> None:
         self._logger = logging.getLogger(__name__)
         self.report_date = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
@@ -219,8 +222,8 @@ class SequencesDiff:
         actual_root = ET.ElementTree(ET.fromstring(actual_xml)).getroot()
 
         for diff in diffmain.diff_texts(expected_xml, actual_xml):
-            if self._diff_is_valid(str(diff)):
-                diff_type = str(diff).split("(")[0]
+            diff_type = str(diff).split("(")[0]
+            if self._diff_is_valid(str(diff)) and diff_type in self.SUPPORTED_DIFFS:
                 expected_value = self._get_attribute_value_based_on_node(expected_root, diff.node, diff.name)
                 if diff.node not in diffs_as_dict['actual'].keys():
                     diffs_as_dict['actual'][diff.node] = {diff.name: diff.value}
