@@ -30,7 +30,7 @@ def reset() -> WebDriver:
     if CONFIG["driver"]["platform"] == "web":
         web_options = webdriver.ChromeOptions()
         web_options.add_argument("--disable-dev-shm-usage")
-        web_options.add_argument("--window-size=1980,1080")
+        web_options.add_argument("--start-maximized")
         web_options.add_argument("--headless")
         driver = webdriver.Remote(CONFIG["driver"]["command_executor"], capabilities, options=web_options)
         driver.get(CONFIG["driver"]["url"])
