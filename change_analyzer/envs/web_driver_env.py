@@ -10,6 +10,7 @@ from gym import spaces
 from selenium.webdriver.remote.webdriver import WebDriver
 
 from change_analyzer.spaces.actions.app_action import AppAction
+from change_analyzer.spaces.all_elements_app_action_space import AllElementsAppActionSpace
 from change_analyzer.spaces.discrete_app_action_space import DiscreteAppActionSpace
 from change_analyzer.utils import image_pad_resize_to
 
@@ -25,7 +26,7 @@ class WebDriverEnv(gym.Env):
         self._reset_app = reset_app
         self._driver = None
         self._logger = logging.getLogger(__name__)
-        self._prev_screenshot_dims = None
+        self._prev_screenshot = None
 
     def reset(self) -> Union[Dict, np.ndarray]:
         self._driver = self._reset_app()
@@ -39,7 +40,7 @@ class WebDriverEnv(gym.Env):
         reward = 0
         try:
             action.perform()
-            reward = 1
+            reward = self._calc_reward()
         except Exception as e:
             self._logger.error(e)
         finally:
@@ -51,11 +52,11 @@ class WebDriverEnv(gym.Env):
 
     def render(self, mode: str = "human") -> Union[Image.Image, str, np.ndarray]:
         pic = self._get_screenshot()
-        prev_dims = self._prev_screenshot_dims
+        prev_dims = self._prev_screenshot.size
         curr_dims = pic.size
         if (prev_dims is not None) and (prev_dims != curr_dims):
             pic = image_pad_resize_to(pic, prev_dims)
-        self._prev_screenshot_dims = pic.size
+        self._prev_screenshot = pic
 
         if mode == "human":
             return pic
@@ -97,7 +98,8 @@ class WebDriverEnv(gym.Env):
                 "has_error": spaces.Discrete(2),
             }
         )
-        self.action_space = DiscreteAppActionSpace(self._driver)
+        # self.action_space = DiscreteAppActionSpace(self._driver)
+        self.action_space = AllElementsAppActionSpace(self._driver)
 
     def _get_screenshot(self) -> Image:
         # to take the entire screenshot https://stackoverflow.com/a/53825388 could be used
@@ -105,3 +107,13 @@ class WebDriverEnv(gym.Env):
         pic = Image.open(stream).convert("RGB")
         stream.close()
         return pic
+
+    def _calc_reward(self) -> int:
+        if self._prev_screenshot is None:
+            raise Exception("Previous screenshot is not stored, call reset() before using the environment")
+
+        dims = self._prev_screenshot.size
+        diff = np.subtract(np.array(self._prev_screenshot.getdata(), np.uint8).reshape(dims[1], dims[0], 3), self.render("rgb_array")).flatten()
+        # TODO discount could be added if the screen was seen before
+        return np.nonzero(diff)[0].size
+
