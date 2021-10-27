@@ -1,6 +1,7 @@
 from io import BytesIO
 from typing import List
 
+import numpy as np
 import pandas as pd
 from PIL import Image
 from selenium.webdriver.remote.webelement import WebElement
@@ -20,15 +21,15 @@ class AppAction:
     def perform(self) -> None:
         pass
 
-    def _get_attr(self, object, attr):
+    def _get_attr(self, el, attr):
         if attr == 'screenshot_as_png':
-            stream = BytesIO(png)
+            stream = BytesIO(getattr(el, attr))
             pic = Image.open(stream).convert("RGB")
             stream.close()
             return np.array(pic.getdata(), np.uint8).reshape(pic.size[1], pic.size[0], 3)
 
         path = attr.split(".")
-        ref = object
+        ref = el
         while path:
             element, path = path[0], path[1:]
             try:

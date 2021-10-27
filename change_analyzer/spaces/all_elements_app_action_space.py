@@ -15,7 +15,7 @@ class AllElementsAppActionSpace(Space):
         self.actions = set()
         self.driver = driver
         self.actions = {
-            ClickAppAction(el) for el in self.driver.find_elements_by_xpath(f"//*")
+            ClickAppAction(el) for el in self.driver.find_elements_by_xpath("//*")
         }
         self._logger.info(f"Found {len(self.actions)} actions on the screen")
 

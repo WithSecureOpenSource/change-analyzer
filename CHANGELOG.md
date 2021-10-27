@@ -2,6 +2,50 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.0 (2021-10-20)
+### Feature
+* Add validation for each diff ([`b2160e0`](https://github.com/F-Secure/change-analyzer/commit/b2160e09bf313ef4aa3569e24540c4ba82f59783))
+
+## v0.5.1 (2021-10-19)
+### Fix
+* Add various fixes based on review comments ([`fd06d5d`](https://github.com/F-Secure/change-analyzer/commit/fd06d5d398508200036f9943c5a61d4b58460680))
+
+## v0.5.0 (2021-10-15)
+### Feature
+* Add dockerfile and dependencies ([`ad640c7`](https://github.com/F-Secure/change-analyzer/commit/ad640c74d85f3b63a489888d8fe13d86b9d62499))
+
+## v0.4.2 (2021-10-15)
+### Fix
+* Add config for semantic-release ([`7027f1f`](https://github.com/F-Secure/change-analyzer/commit/7027f1f7a4c77695fd5dfe75062c3ebb46ece78b))
+
+## v0.4.1 (2021-10-15)
+### Fix
+* Add python3-setuptools package to publish action ([`4d3f0f3`](https://github.com/F-Secure/change-analyzer/commit/4d3f0f3af0aa73661251664bab5ab1bfdf42bbf1))
+
+## v0.4.0 (2021-10-14)
+### Feature
+* Enable github releasing ([`c42060a`](https://github.com/F-Secure/change-analyzer/commit/c42060a3c1b5446240a64ba8b5f3cd96b9ee8319))
+
+## v0.3.0 (2021-10-14)
+### Feature
+* Save merged dataframe as zip ([`54a96c5`](https://github.com/F-Secure/change-analyzer/commit/54a96c57c8eceb029315957be4adf8684cc2bc9d))
+
+## v0.2.4 (2021-10-14)
+### Fix
+* Fix the case when xmls were nan ([`df6d18e`](https://github.com/F-Secure/change-analyzer/commit/df6d18e84410384f8cdda088df67e0c2c6b2bedb))
+
+## v0.2.3 (2021-10-14)
+### Fix
+* Fix setup.py readme import issue ([`5d5597c`](https://github.com/F-Secure/change-analyzer/commit/5d5597c099d8729df7d84a779acfcce9eb2b5941))
+
+## v0.2.2 (2021-10-13)
+### Fix
+* Fix large width for report images on web platform ([`a33aafa`](https://github.com/F-Secure/change-analyzer/commit/a33aafa09fa4bd027fbb663afb511c240e777172))
+
+### Documentation
+* Fix of acknowledgement section to README.md ([`6379688`](https://github.com/F-Secure/change-analyzer/commit/6379688ba3eec11239002559e7efd1db4ece7f16))
+* Added acknowledgement section to README.md ([`1f9f0b7`](https://github.com/F-Secure/change-analyzer/commit/1f9f0b7959fe47f6b84c3d0b08e1f68833b1c332))
+
 ## v0.2.1 (2021-10-13)
 ### Fix
 * Fix dataframe merge ([`1c41875`](https://github.com/F-Secure/change-analyzer/commit/1c41875e2fbf12b0ed78590c4e40a8732000e6cd))

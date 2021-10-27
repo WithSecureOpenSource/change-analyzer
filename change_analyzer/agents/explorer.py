@@ -20,29 +20,28 @@ class ExplorerAgent(Agent):
 
     def run(self) -> None:
         for i in range(self.total_steps):
+            reward = 0
+            done = True
             try:
                 action = (
                     self.env.action_space.sample()
                     if self.model is None
                     else self._predict_action(self.env.action_space.actions)
                 )
-                print("Perform action ", str(action))
-                obs, reward, done, info = self.env.step(action)
+                _, reward, done, _ = self.env.step(action)
                 self.total_reward += reward
-
-                action.df["reward"] = reward
-                self._update_df(action.df)
             except Exception as e:
                 self._logger.info("Action couldn't be performed due to an exception")
                 self._logger.info(e)
-                done = True
+            finally:
+                action.df["reward"] = reward
+                self._update_df(action.df)
+
             if done:
                 break
 
         self.model.train(self.df)
-        self._logger.info(
-            f"Episode done in {self.total_steps} steps, total reward {self.total_reward}"
-        )
+        self._logger.info(f"{self.total_steps} steps, total reward {self.total_reward}")
 
     def _update_df(self, df: pd.DataFrame) -> None:
         if self.df is None:
@@ -79,5 +78,5 @@ class ExplorerAgent(Agent):
     def _predict_action(self, actions: List[AppAction]) -> AppAction:
         df = pd.concat([action.df for action in actions], ignore_index=True, sort=False)
         predictions, _ = self.model.predict(df, batch_size=len(actions))
-        return actions[predictions["reward"].idxmax()]  # we can try to use suboptimal action here "Epsilon-Greedy Action Selection"
+        return actions[predictions["reward"].idxmax()]  # TODO we can try to use suboptimal action here "Epsilon-Greedy Action Selection" / subtract entropy
 

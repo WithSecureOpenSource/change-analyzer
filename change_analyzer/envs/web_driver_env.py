@@ -114,6 +114,5 @@ class WebDriverEnv(gym.Env):
 
         dims = self._prev_screenshot.size
         diff = np.subtract(np.array(self._prev_screenshot.getdata(), np.uint8).reshape(dims[1], dims[0], 3), self.render("rgb_array")).flatten()
-        # TODO discount could be added if the screen was seen before
-        return np.nonzero(diff)[0].size
+        return np.nonzero(diff)[0].size  # TODO discount could be added if the screen was seen before
 

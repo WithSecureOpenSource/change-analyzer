@@ -2,25 +2,26 @@ import argparse
 import glob
 import json
 import os
-from os.path import basename, dirname
 import logging
 import re
-from typing import Tuple, List, Dict, Union
-
-import PIL.Image
 import numpy as np
 import pandas as pd
-from PIL import Image
-from PIL import ImageDraw
-
-from xmldiff import main as diffmain
 import xml.etree.ElementTree as ET
+
+from os.path import basename, dirname
+from typing import Tuple, List, Dict, Union
+from bs4 import BeautifulSoup
+from PIL import Image, ImageDraw
+from xmldiff import main as diffmain
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
 from change_analyzer.wrappers.sequence_recorder import SequenceRecorder
 
 
 class SequencesDiff:
+
+    SUPPORTED_DIFFS = ['UpdateAttrib']
+
     def __init__(self, sequence1_file: str, sequence2_file: str) -> None:
         self._logger = logging.getLogger(__name__)
         self.report_date = datetime.now().strftime("%Y_%m_%d-%H_%M_%S")
@@ -46,6 +47,9 @@ class SequencesDiff:
         )
 
         # Add the first step into DF, based on current first row of DF
+        first_step_action = 'open the Application'
+        if 'html' in self.df_merged[f'{SequenceRecorder.COL_PAGE_SOURCE_BEFORE}_actual'][0]:
+            first_step_action = 'open the Website URL'
         first_step_data = {
             f'{SequenceRecorder.COL_SEQUENCE_ID}_expected': self.df_merged[f'{SequenceRecorder.COL_SEQUENCE_ID}_expected'][0],
             f'{SequenceRecorder.COL_SEQUENCE_ID}_actual': self.df_merged[f'{SequenceRecorder.COL_SEQUENCE_ID}_actual'][0],
@@ -53,16 +57,22 @@ class SequencesDiff:
             f'{SequenceRecorder.COL_PAGE_SOURCE_AFTER}_expected': self.df_merged[f'{SequenceRecorder.COL_PAGE_SOURCE_BEFORE}_expected'][0],
             f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_actual': self.df_merged[f'{SequenceRecorder.COL_ACTION_IMAGE_BEFORE}_actual'][0],
             f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_expected': self.df_merged[f'{SequenceRecorder.COL_ACTION_IMAGE_BEFORE}_expected'][0],
-            f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_expected': 'open the Application',
-            f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_actual': 'open the Application',
+            f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_expected': first_step_action,
+            f'{SequenceRecorder.COL_ACTION_TO_PERFORM}_actual': first_step_action,
         }
         first_step_df = pd.DataFrame([first_step_data])
         self.df_merged = pd.concat([first_step_df, self.df_merged], ignore_index=True)
-        self.df_merged.to_csv(os.path.join(self.report_folder, 'df.csv'), index=False)
+        self.df_merged.to_csv(os.path.join(self.report_folder, 'df.csv.zip'), index=False)
+
+        # Add Platform
+        self.df_merged['Platform'] = np.where(self.df_merged['PageSourceAfter_actual'].str.contains('html') |
+                                              self.df_merged['PageSourceBefore_actual'].str.contains('html'),
+                                              'web', 'win')
 
         # Images
         img_col = [col for col in self.df_merged.columns if "image" in col.lower()]
         for col in img_col:
+            self.df_merged.fillna({col: f"{np.zeros((1,1,3))}"}, inplace=True)
             self.df_merged[col] = self.df_merged[col].apply(self.json_to_image)
         self.df_merged["ImageVerdict"] = self.df_merged.apply(lambda row: "pass" if np.array_equal(
             row[f'{SequenceRecorder.COL_ACTION_IMAGE_AFTER}_expected'],
@@ -72,11 +82,13 @@ class SequencesDiff:
         # XMLs
         xml_cols = [col for col in self.df_merged.columns if "pagesource" in col.lower()]
         for col in xml_cols:
+            self.df_merged.fillna({col: '<?xml version="1.0" encoding="UTF-8"?><metadata></metadata>'}, inplace=True)
             self.df_merged[col] = self.df_merged[col].apply(self.encode_xml)
 
         self.df_merged["PageSource_diff"] = self.df_merged.apply(lambda row: self._extract_diffs_as_dict(
             row[f'{SequenceRecorder.COL_PAGE_SOURCE_AFTER}_expected'],
-            row[f'{SequenceRecorder.COL_PAGE_SOURCE_AFTER}_actual']
+            row[f'{SequenceRecorder.COL_PAGE_SOURCE_AFTER}_actual'],
+            row['Platform']
         ), axis=1)
         self.df_merged["DiffInfo"] = self.df_merged["PageSource_diff"].apply(self._get_diff_info)
 
@@ -97,7 +109,7 @@ class SequencesDiff:
         ), axis=1)
 
     @staticmethod
-    def json_to_image(img: str) -> Union[PIL.Image.Image, float]:
+    def json_to_image(img: str) -> Union[Image.Image, float]:
         try:
             return Image.fromarray(np.array(json.loads(img), dtype=np.uint8))
         except:
@@ -105,12 +117,12 @@ class SequencesDiff:
 
     @staticmethod
     def encode_xml(xml: str) -> Union[bytes, float]:
-        try:
-            return xml.encode(re.findall(r'encoding=\"(.+?)\"', xml)[0])
-        except:
-            return np.nan
+        encodings = re.findall(r'encoding=\"(.+?)\"', xml)
+        if len(encodings) == 0:
+            return xml.encode("utf-8")
+        return xml.encode(encodings[0])
 
-    def _save_step_images(self, image_actual: PIL.Image.Image, image_expected: PIL.Image.Image, filename_actual: str, filename_expected: str) -> None:
+    def _save_step_images(self, image_actual: Image.Image, image_expected: Image.Image, filename_actual: str, filename_expected: str) -> None:
         """Save step expected and actual images of the SUT"""
         expected_image_filepath = os.path.join(self.report_folder, filename_expected)
         actual_image_filepath = os.path.join(self.report_folder, filename_actual)
@@ -119,7 +131,7 @@ class SequencesDiff:
         image_actual.save(actual_image_filepath, format="PNG")
 
     @staticmethod
-    def _draw_boundaries(info_list: List[Dict], image_actual_pil: PIL.Image.Image, image_expected_pil: PIL.Image.Image) -> None:
+    def _draw_boundaries(info_list: List[Dict], image_actual_pil: Image.Image, image_expected_pil: Image.Image) -> None:
         if len(info_list) == 0:
             return
 
@@ -177,24 +189,41 @@ class SequencesDiff:
             f.write(html_template_string)
 
     @staticmethod
+    def _diff_is_valid(diff: str) -> bool:
+        """Check if diff doesn't contain ignored diffs
+        Currently we don't check a diff further if it contains the following strings:
+            - ProcessId
+            - RuntimeId
+            - script
+        """
+        ignored_diffs = ['ProcessId', 'RuntimeId', 'script']
+        return not any(ignored_diff in diff for ignored_diff in ignored_diffs)
+
+    @staticmethod
     def _get_attribute_value_based_on_node(page_root: ET.Element, node: str, attribute: str) -> str:
         """Get attribute value for specific node from given page source"""
         formatted_node = "./" + "/".join(node.split("/")[2::])
         elem = page_root.findall(formatted_node)[0]
         return elem.attrib[attribute]
 
-    def _extract_diffs_as_dict(self, expected_xml: str, actual_xml: str) -> Dict:
+    def _extract_diffs_as_dict(self, expected_xml: str, actual_xml: str, platform: str) -> Dict:
         """Extract diffs as dictionary, using expected and actual approach"""
-        expected_root = ET.ElementTree(ET.fromstring(expected_xml)).getroot()
-        actual_root = ET.ElementTree(ET.fromstring(actual_xml)).getroot()
-
         diffs_as_dict = {
             'expected': {},
             'actual': {}
         }
+
+        if platform == 'web':
+            # We need to preprocess the html to be xml-like
+            expected_xml = BeautifulSoup(expected_xml, 'html.parser').prettify()
+            actual_xml = BeautifulSoup(actual_xml, 'html.parser').prettify()
+
+        expected_root = ET.ElementTree(ET.fromstring(expected_xml)).getroot()
+        actual_root = ET.ElementTree(ET.fromstring(actual_xml)).getroot()
+
         for diff in diffmain.diff_texts(expected_xml, actual_xml):
-            if 'ProcessId' not in diff and 'RuntimeId' not in diff:
-                diff_type = str(diff).split("(")[0]
+            diff_type = str(diff).split("(")[0]
+            if self._diff_is_valid(str(diff)) and diff_type in self.SUPPORTED_DIFFS:
                 expected_value = self._get_attribute_value_based_on_node(expected_root, diff.node, diff.name)
                 if diff.node not in diffs_as_dict['actual'].keys():
                     diffs_as_dict['actual'][diff.node] = {diff.name: diff.value}
