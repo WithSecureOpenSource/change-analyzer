@@ -25,7 +25,6 @@ class WebDriverEnv(gym.Env):
         self._reset_app = reset_app
         self._driver = None
         self._logger = logging.getLogger(__name__)
-        self._prev_screenshot_dims = None
 
     def reset(self) -> Union[Dict, np.ndarray]:
         self._driver = self._reset_app()
@@ -51,11 +50,6 @@ class WebDriverEnv(gym.Env):
 
     def render(self, mode: str = "human") -> Union[Image.Image, str, np.ndarray]:
         pic = self._get_screenshot()
-        prev_dims = self._prev_screenshot_dims
-        curr_dims = pic.size
-        if (prev_dims is not None) and (prev_dims != curr_dims):
-            pic = image_pad_resize_to(pic, prev_dims)
-        self._prev_screenshot_dims = pic.size
 
         if mode == "human":
             return pic
@@ -101,6 +95,9 @@ class WebDriverEnv(gym.Env):
 
     def _get_screenshot(self) -> Image:
         # to take the entire screenshot https://stackoverflow.com/a/53825388 could be used
+        body_el = self._driver.find_element_by_tag_name('body')
+        self._driver.set_window_size(body_el.size['height'], body_el.size['width'])
+
         stream = BytesIO(self._driver.get_screenshot_as_png())
         pic = Image.open(stream).convert("RGB")
         stream.close()
