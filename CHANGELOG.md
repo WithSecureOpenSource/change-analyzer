@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.0 (2021-10-29)
+### Feature
+* Save the screenshot using body element ([`0c79a4e`](https://github.com/F-Secure/change-analyzer/commit/0c79a4e3738036d47c3408350e55e5505f5e47dd))
+* Add capability to start the browser maximized ([`4260597`](https://github.com/F-Secure/change-analyzer/commit/426059788537cc06df113457844d897e5c7f34e2))
+* Record web elements ([`68f55da`](https://github.com/F-Secure/change-analyzer/commit/68f55da2c7d67f830f894359e1f9b456883ebfa8))
+* Contain supported diffs ([`ad66df3`](https://github.com/F-Secure/change-analyzer/commit/ad66df335f30ed7b8056096d310aa8884ceb5f9a))
+
+### Fix
+* Fix diff validation ([`c7946cd`](https://github.com/F-Secure/change-analyzer/commit/c7946cd61dc50280c3db047b8f98556058d8cc59))
+
 ## v0.6.0 (2021-10-20)
 ### Feature
 * Add validation for each diff ([`b2160e0`](https://github.com/F-Secure/change-analyzer/commit/b2160e09bf313ef4aa3569e24540c4ba82f59783))
