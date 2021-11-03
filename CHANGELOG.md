@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.0 (2021-11-03)
+### Feature
+* Enrich page source with data from driver ([`8e0b429`](https://github.com/F-Secure/change-analyzer/commit/8e0b429b1687f280290d13e836899d4280e7b3a1))
+
 ## v0.7.0 (2021-10-29)
 ### Feature
 * Save the screenshot using body element ([`0c79a4e`](https://github.com/F-Secure/change-analyzer/commit/0c79a4e3738036d47c3408350e55e5505f5e47dd))
