@@ -1,6 +1,6 @@
 import os
 from os.path import isfile
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple
 import pandas as pd
 import time
 import json
@@ -8,7 +8,7 @@ import json
 import gym as gym
 from gym import Wrapper
 from selenium.webdriver.remote.webdriver import WebDriver
-from lxml import html
+from lxml import html, etree
 
 from change_analyzer.spaces.actions.app_action import AppAction
 from change_analyzer.wrappers.transparent_wrapper_mixin import TransparentWrapperMixin
@@ -22,8 +22,6 @@ class SequenceRecorder(Wrapper, TransparentWrapperMixin):
     COL_ACTION_TO_PERFORM = 'ActionToPerform'
     COL_ACTION_IMAGE_BEFORE = 'ActionImageBefore'
     COL_ACTION_IMAGE_AFTER = 'ActionImageAfter'
-    COL_PAGE_ELEMENTS_AFTER = 'PageElementsAfter'
-    COL_PAGE_ELEMENTS_BEFORE = 'PageElementsBefore'
 
     def __init__(self, env: gym.Env, directory: str, sequence_id: str) -> None:
         super(SequenceRecorder, self).__init__(env)
@@ -33,22 +31,16 @@ class SequenceRecorder(Wrapper, TransparentWrapperMixin):
 
     def step(self, action: AppAction) -> Tuple[Dict, float, bool, WebDriver]:
         current_action = str(action)
-        page_source_before = action.el.parent.page_source
+        page_source_before = self.get_enriched_page_source(info=action.el.parent)
         page_source_after = ""
         image_before = []
         image_after = []
-        page_elements_after = []
-        page_elements_before = []
-        if 'html' in page_source_before:
-            page_elements_before.append(self.get_all_elements_from_webpage(info=action.el.parent))
 
         try:
             image_before = self.env.render("rgb_array").tolist()
             obs, reward, done, info = self.env.step(action)
             image_after = self.env.render("rgb_array").tolist()
-            page_source_after = info.page_source
-            if 'html' in page_source_after:
-                page_elements_after.append(self.get_all_elements_from_webpage(info))
+            page_source_after = self.get_enriched_page_source(info)
         finally:
             self._save_dataframe_to_csv(pd.DataFrame({
                 self.COL_TIMESTAMP: [int(time.time())],
@@ -58,36 +50,40 @@ class SequenceRecorder(Wrapper, TransparentWrapperMixin):
                 self.COL_ACTION_TO_PERFORM: [current_action],
                 self.COL_ACTION_IMAGE_BEFORE: [json.dumps(image_before)],
                 self.COL_ACTION_IMAGE_AFTER: [json.dumps(image_after)],
-                self.COL_PAGE_ELEMENTS_AFTER: [page_elements_after],
-                self.COL_PAGE_ELEMENTS_BEFORE: [page_elements_before],
             }))
         return obs, reward, done, info
 
     @staticmethod
-    def get_all_elements_from_webpage(info: WebDriver) -> List[Tuple]:
-        """Get all elements of a given page, defined by the info's page_source.
-        All elements will have the following data:
-            - Full xpath
+    def get_enriched_page_source(info: WebDriver) -> str:
+        """Enrich a given page source with additional info from the WebDriver
+        All page elements will have the following additional info:
             - Text if available
             - x, y coordinates
             - h, w dimensions
         """
-        page_elements = []
-
-        # Get elements' xpaths from given page source
-        page_elements_xpaths = []
+        # Get elements' by xpath from given page source
         root = html.fromstring(info.page_source)
         tree = root.getroottree()
         all_elements_by_xpath = root.xpath('//*')
         for element in all_elements_by_xpath:
-            page_elements_xpaths.append(tree.getpath(element))
+            element_xpath = tree.getpath(element)
+            xpath_to_find = "./"
+            if 'head' in element_xpath:
+                xpath_to_find = f"./{element_xpath.split('/html/head')[1]}"
 
-        # Get other data using the info driver
-        all_driver_elements = info.find_elements_by_xpath("//*")
-        for i, el in enumerate(all_driver_elements):
-            page_elements.append((page_elements_xpaths[i], el.text, el.location, el.size))
+            if 'body' in element_xpath:
+                xpath_to_find = f"./{element_xpath.split('/html/body')[1]}"
 
-        return page_elements
+            if xpath_to_find != "./":
+                driver_el = info.find_element_by_xpath(element_xpath)
+                el = root.find(xpath_to_find)
+                el.set('x', f"{driver_el.location['x']}")
+                el.set('y', f"{driver_el.location['y']}")
+                el.set('height', f"{driver_el.size['height']}")
+                el.set('width', f"{driver_el.size['width']}")
+
+        # Return the enriched page source decoded from bytes
+        return etree.tostring(root).decode("utf-8")
 
     def close(self) -> None:
         self.env.close()
