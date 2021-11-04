@@ -74,9 +74,9 @@ jobs:
         run: |
           docker build -t changeanalyzer:latest .
           # Replay & compare
-          # docker run -v $(pwd)/previous_results:/home/localtester/previous_results:Z --security-opt seccomp=./chrome.json changeanalyzer "--ini=[driver]\ncommand_executor=http://127.0.0.1:9515\nplatform=web\nurl=https://learn.ivves.eu/" -r -c --csv=/home/localtester/previous_results
+          docker run -v $(pwd)/previous_results:/home/localtester/previous_results:Z --security-opt seccomp=./chrome.json changeanalyzer "--ini=[driver]\ncommand_executor=http://127.0.0.1:9515\nplatform=web\nurl=https://learn.ivves.eu/" -r -c --csv=/home/localtester/previous_results
           # Generate
-          docker run -v $(pwd)/previous_results:/home/localtester/previous_results:Z --security-opt seccomp=./chrome.json changeanalyzer "--ini=[driver]\ncommand_executor=http://127.0.0.1:9515\nplatform=web\nurl=https://learn.ivves.eu/" -g
+          # docker run -v $(pwd)/previous_results:/home/localtester/previous_results:Z --security-opt seccomp=./chrome.json changeanalyzer "--ini=[driver]\ncommand_executor=http://127.0.0.1:9515\nplatform=web\nurl=https://learn.ivves.eu/" -g
           mkdir docker_results
           docker cp $(docker ps -alq):/home/localtester/change-analyzer/recordings ./docker_results
           docker cp $(docker ps -alq):/home/localtester/next_result.txt ./next_result.txt
