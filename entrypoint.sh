@@ -49,6 +49,7 @@ if [ "$GENERATE" = "1" ]; then
     echo "GENERATE"
     ca-run --config input.ini
     FIRST_RECORD=$(ls -l recordings|tail -n1|tr -s " "|cut --delimiter=' ' -f9)
+    echo "$FIRST_RECORD" > /home/localtester/next_result.txt
 fi
 
 # Replay
