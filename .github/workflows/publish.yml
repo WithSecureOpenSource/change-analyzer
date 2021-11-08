@@ -106,6 +106,7 @@ jobs:
       - name: Publish
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           sudo apt -y install python3-setuptools
           git config user.email "semantic-release"
