@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.9.0 (2021-11-08)
+### Feature
+* Enable pypi publish ([`2cd03db`](https://github.com/F-Secure/change-analyzer/commit/2cd03dbaa1f2addd79beaf3efd83c367e19dbfde))
+
+### Documentation
+* Add about section ([`59796be`](https://github.com/F-Secure/change-analyzer/commit/59796bee5738679316bbcb2db237af4a7f0e9054))
+
 ## v0.8.0 (2021-11-03)
 ### Feature
 * Enrich page source with data from driver ([`8e0b429`](https://github.com/F-Secure/change-analyzer/commit/8e0b429b1687f280290d13e836899d4280e7b3a1))
