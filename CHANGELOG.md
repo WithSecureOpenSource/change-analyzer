@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.9.1 (2021-11-08)
+### Fix
+* Fix pypi publish ([`006ea92`](https://github.com/F-Secure/change-analyzer/commit/006ea9262624ab51e3a2fad5185b1cd3d7283c2f))
+
 ## v0.9.0 (2021-11-08)
 ### Feature
 * Enable pypi publish ([`2cd03db`](https://github.com/F-Secure/change-analyzer/commit/2cd03dbaa1f2addd79beaf3efd83c367e19dbfde))
