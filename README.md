@@ -1,6 +1,12 @@
 # Change analyzer
 
 - [Change analyzer](#change-analyzer)
+  - [About](#about)
+    - [Main Data features](#main-data-features)
+    - [Data Collection](#data-collection)
+    - [Data Reconstruction](#data-reconstruction)
+    - [Data Analysis](#data-analysis)
+    - [Data Validation](#data-validation)
   - [Setup and usage in Windows environment](#setup-and-usage-in-windows-environment)
     - [1. Download required 3rd party softwares:](#1-download-required-3rd-party-softwares)
     - [2. Enable developer mode in Windows](#2-enable-developer-mode-in-windows)
@@ -11,6 +17,53 @@
   - [Available commands](#available-commands)
   - [Configuration files](#configuration-files)
   - [Acknowledgement](#acknowledgement)
+
+## About
+Change-Analyzer (CA in short) is a framework built utilizing ML techniques, leveraging [OpenAI Gym library](https://gym.openai.com/). 
+CA allows product teams to get feedback regarding their software product, aka SUT (System Under Test).
+
+### Main Data features
+Essentially, is built around the following main Data features:
+* [Data Collection](#data-collection), done through Automated Exploratory Testing
+* [Data Reconstruction](#data-reconstruction), done through Automated Regression Testing
+* [Data Analysis](#data-analysis), done through Change Detection
+* [Data Validation](#data-validation), done through Verdict Generation
+
+### Data Collection
+After installation and configuration (see sections below) Data Collection can be started.
+An agent is exploring the SUT without prior knowledge of it, recording testing sequence and state of the application.
+Once the execution is completed, the Data is saved in a csv file, available in a dedicated folder, from recordings.
+Currently, the Data consists of the following information regarding the steps of the executed sequence:
+* [Timestamp](#): an Integer with the execution time in epoch 	
+* [SequenceId](#): a String with a unique ID to identify the sequence
+* [PageSourceBefore](#): a String with the page source (before step execution)
+* [PageSourceAfter](#): a String with the page source (after step execution)
+* [ActionToPerform](#): a String with the action that will be performed next
+* [ActionImageBefore](#): a numpy.ndarray with the image of SUT (before step execution)
+* [ActionImageAfter](#): a numpy.ndarray with the image of SUT (after step execution)
+
+### Data Reconstruction
+Once several sequences exist, they can be used for Data Reconstruction.
+An agent is rerunning the specified existing sequence, recording a new state of the application.
+Data collected has the same structure as described in the above section.
+
+### Data Analysis
+In this phase, two sequences are analyzed. The sequences are the same, from steps perspective, but are executed against 
+different SUT versions.</br>
+A report is created, to showcase the differences between the two sequences, if any. The goal is to provide a visual tool 
+for change detection.</br>
+The report will contain the following info:
+* The info regarding which is the expected sequence and which is the actual sequence
+* A visual indicator for each step if it was considered passed or failed
+* A description of the executed steps step
+* A short info to support the step status
+* Expected image of the SUT, from expected sequence
+* Actual image of the SUT, from actual sequence
+* Actual and expected images may contain highlighted elements, if they were detected to be part of a change
+
+### Data Validation
+Using ML techniques, in this phase, the tool should be able to say if the detected changes are expected behavior of faults in the SUT.
+Data Validation will be cover in more details later, because currently is in planning phase.
 
 ## Setup and usage in Windows environment
 ### 1. Download required 3rd party softwares: 
