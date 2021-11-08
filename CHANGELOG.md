@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.0 (2021-11-08)
+### Feature
+* Test pypi release ([`2edb768`](https://github.com/F-Secure/change-analyzer/commit/2edb7685ed457b753a2440567f87ab5f116b1eca))
+
 ## v0.9.1 (2021-11-08)
 ### Fix
 * Fix pypi publish ([`006ea92`](https://github.com/F-Secure/change-analyzer/commit/006ea9262624ab51e3a2fad5185b1cd3d7283c2f))
