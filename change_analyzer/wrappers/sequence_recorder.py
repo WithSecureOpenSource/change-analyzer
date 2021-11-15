@@ -6,8 +6,9 @@ import time
 import json
 
 import gym as gym
+import selenium.webdriver.remote.webelement
 from gym import Wrapper
-from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.remote.webdriver import WebDriver, WebElement
 from lxml import html, etree
 
 from change_analyzer.spaces.actions.app_action import AppAction
@@ -54,8 +55,8 @@ class SequenceRecorder(Wrapper, TransparentWrapperMixin):
         return obs, reward, done, info
 
     @staticmethod
-    def _enrich_element(element_to_enrich, element_with_info):
-        h, w, x, y = element_with_info.rect.values()
+    def _enrich_element(element_to_enrich: html.HtmlElement, element_info: Dict):
+        h, w, x, y = element_info.values()
         element_to_enrich.set('x', str(x))
         element_to_enrich.set('y', str(y))
         element_to_enrich.set('height', str(h))
@@ -88,7 +89,7 @@ class SequenceRecorder(Wrapper, TransparentWrapperMixin):
         if 'xml' in page_source:
             for index, el in enumerate(all_elements_from_root[2::]):
                 # We bypass the first two elements of the list (/html and /html/body) - they have no map in the driver
-                self._enrich_element(el, all_elements_from_driver[index])
+                self._enrich_element(el, all_elements_from_driver[index].rect)
             return etree.tostring(root).decode("utf-8")
 
         for element in all_elements_from_root:
