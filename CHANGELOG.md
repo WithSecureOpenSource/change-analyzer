@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.2 (2021-11-15)
+### Fix
+* Fix the data values used for enriching an element ([`b719394`](https://github.com/F-Secure/change-analyzer/commit/b719394bb921a403f80241f8373dfbd1a8a08d82))
+
 ## v0.10.1 (2021-11-15)
 ### Fix
 * Add typing ([`c433a84`](https://github.com/F-Secure/change-analyzer/commit/c433a84a5da80d2b1ad2f56a7d16d609d81288af))
