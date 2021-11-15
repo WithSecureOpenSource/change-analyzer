@@ -56,11 +56,10 @@ class SequenceRecorder(Wrapper, TransparentWrapperMixin):
 
     @staticmethod
     def _enrich_element(element_to_enrich: html.HtmlElement, element_info: Dict):
-        h, w, x, y = element_info.values()
-        element_to_enrich.set('x', str(x))
-        element_to_enrich.set('y', str(y))
-        element_to_enrich.set('height', str(h))
-        element_to_enrich.set('width', str(w))
+        element_to_enrich.set('x', str(element_info['x']))
+        element_to_enrich.set('y', str(element_info['y']))
+        element_to_enrich.set('height', str(element_info['height']))
+        element_to_enrich.set('width', str(element_info['width']))
 
     def get_enriched_page_source(self, info: WebDriver) -> str:
         """Enrich a given page source with additional info from the WebDriver
