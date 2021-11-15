@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.1 (2021-11-15)
+### Fix
+* Add typing ([`c433a84`](https://github.com/F-Secure/change-analyzer/commit/c433a84a5da80d2b1ad2f56a7d16d609d81288af))
+* Fix comments from review ([`6c68f98`](https://github.com/F-Secure/change-analyzer/commit/6c68f9806972ff0fdccdf7a458fc329dd72735d6))
+* Fix enriched data for xml ([`3041cb0`](https://github.com/F-Secure/change-analyzer/commit/3041cb0f953162ced758c079180042b85aa50a27))
+
 ## v0.10.0 (2021-11-08)
 ### Feature
 * Test pypi release ([`2edb768`](https://github.com/F-Secure/change-analyzer/commit/2edb7685ed457b753a2440567f87ab5f116b1eca))
