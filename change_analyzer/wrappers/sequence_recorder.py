@@ -6,8 +6,9 @@ import time
 import json
 
 import gym as gym
+import selenium.webdriver.remote.webelement
 from gym import Wrapper
-from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.remote.webdriver import WebDriver, WebElement
 from lxml import html, etree
 
 from change_analyzer.spaces.actions.app_action import AppAction
@@ -54,18 +55,44 @@ class SequenceRecorder(Wrapper, TransparentWrapperMixin):
         return obs, reward, done, info
 
     @staticmethod
-    def get_enriched_page_source(info: WebDriver) -> str:
+    def _enrich_element(element_to_enrich: html.HtmlElement, element_info: Dict):
+        h, w, x, y = element_info.values()
+        element_to_enrich.set('x', str(x))
+        element_to_enrich.set('y', str(y))
+        element_to_enrich.set('height', str(h))
+        element_to_enrich.set('width', str(w))
+
+    def get_enriched_page_source(self, info: WebDriver) -> str:
         """Enrich a given page source with additional info from the WebDriver
         All page elements will have the following additional info:
             - Text if available
             - x, y coordinates
             - h, w dimensions
         """
-        # Get elements' by xpath from given page source
-        root = html.fromstring(info.page_source)
+        try:
+            page_source = info.page_source
+        except:
+            # Driver is no longer available - no page source to use
+            return ''
+
+        if 'xml' in page_source:
+            root = html.fromstring(page_source.encode("utf-16"))
+        else:
+            root = html.fromstring(page_source)
+
         tree = root.getroottree()
-        all_elements_by_xpath = root.xpath('//*')
-        for element in all_elements_by_xpath:
+
+        # Get elements' by xpath from given page source and
+        all_elements_from_root = root.xpath('//*')
+        all_elements_from_driver = info.find_elements_by_xpath("//*")
+
+        if 'xml' in page_source:
+            for index, el in enumerate(all_elements_from_root[2::]):
+                # We bypass the first two elements of the list (/html and /html/body) - they have no map in the driver
+                self._enrich_element(el, all_elements_from_driver[index].rect)
+            return etree.tostring(root).decode("utf-8")
+
+        for element in all_elements_from_root:
             element_xpath = tree.getpath(element)
             xpath_to_find = "./"
             if 'head' in element_xpath:
@@ -77,10 +104,7 @@ class SequenceRecorder(Wrapper, TransparentWrapperMixin):
             if xpath_to_find != "./":
                 driver_el = info.find_element_by_xpath(element_xpath)
                 el = root.find(xpath_to_find)
-                el.set('x', f"{driver_el.location['x']}")
-                el.set('y', f"{driver_el.location['y']}")
-                el.set('height', f"{driver_el.size['height']}")
-                el.set('width', f"{driver_el.size['width']}")
+                self._enrich_element(el, driver_el)
 
         # Return the enriched page source decoded from bytes
         return etree.tostring(root).decode("utf-8")
