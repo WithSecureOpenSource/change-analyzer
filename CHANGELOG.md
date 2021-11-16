@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.3 (2021-11-16)
+### Fix
+* Fix diff validation ([`eb2f808`](https://github.com/F-Secure/change-analyzer/commit/eb2f808b5a33255695888dfb402101e4f0893ec7))
+
 ## v0.10.2 (2021-11-15)
 ### Fix
 * Fix the data values used for enriching an element ([`b719394`](https://github.com/F-Secure/change-analyzer/commit/b719394bb921a403f80241f8373dfbd1a8a08d82))
