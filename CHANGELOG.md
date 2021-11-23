@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.4 (2021-11-23)
+### Fix
+* Add missing dependency ([`858692c`](https://github.com/F-Secure/change-analyzer/commit/858692c5dadf33243cb5bf67c6b656c472657a51))
+
 ## v0.10.3 (2021-11-16)
 ### Fix
 * Fix diff validation ([`eb2f808`](https://github.com/F-Secure/change-analyzer/commit/eb2f808b5a33255695888dfb402101e4f0893ec7))
