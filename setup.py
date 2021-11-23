@@ -12,7 +12,7 @@ def _read_long_description():
 
 REQUIRE = [
     "gym",
-    "pandas",
+    "appium-python-client",
     "Pillow",
     "pywinauto",
     "selenium",
