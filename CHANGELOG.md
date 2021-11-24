@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.0 (2021-11-24)
+### Feature
+* Add steps as argument ([`73ab8a9`](https://github.com/F-Secure/change-analyzer/commit/73ab8a91e12e496518c4b9e53a5a3dc758ba0d14))
+
 ## v0.10.5 (2021-11-23)
 ### Fix
 * Fix requirements ([`1e96152`](https://github.com/F-Secure/change-analyzer/commit/1e96152350df3673e2d4188d297387cbbe1eb24e))
