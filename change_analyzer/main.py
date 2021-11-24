@@ -50,6 +50,11 @@ def main():
         required=True,
     )
     parser.add_argument(
+        "--steps",
+        help="total steps desired for the sequence to have",
+        required=False,
+    )
+    parser.add_argument(
         "--csv_folder",
         help="path to the folder within recordings which has the targeted csv file",
         required=False,
@@ -74,7 +79,7 @@ def main():
         if args.csv_folder:
             ReplayAgent(env, args.csv_folder).run()
         else:
-            RandomAgent(env, 5).run()
+            RandomAgent(env, int(args.steps)).run()
     finally:
         env.close()
 
