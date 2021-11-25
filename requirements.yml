@@ -1,9 +1,4 @@
 name: change_analyzer
-channels:
-  - conda-forge
-  - hargup/label/pypi
-  - anaconda
-  - defaults
 dependencies:
   - python=3.7
   - pip
