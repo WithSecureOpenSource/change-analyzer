@@ -50,7 +50,7 @@ setup(
     long_description_content_type="text/markdown",
     author="Matvey Pashkovskiy, Sorin Patrasoiu, Joona Oikarinen",
     author_email="",
-    url=f"https://stash.f-secure.com/users/pashma/repos/{NAME}",
+    url=f"https://github.com/F-Secure/{NAME}",
     platforms="any",
     version=VERSION_NUMBER,
     packages=find_packages(exclude=[f"{NAME_DASHED}.tests", f"{NAME_DASHED}.tests.*"]),
