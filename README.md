@@ -151,12 +151,19 @@ This project uses <a href="https://docs.python.org/3/library/configparser.html">
   platform=
   app=
 ```
-Example .ini file using WinAppDriver.exe and Windows platform:
+Example .ini file using WinAppDriver and Windows platform:
 ```
   [driver]
   command_executor=http://127.0.0.1:4723
   platform=win
   app=/path/to/test/application.exe
+```
+Example .ini file using SeleniumDriver and Web platform:
+```
+  [driver]
+  command_executor=http://127.0.0.1:4444/wd/hub
+  platform=web
+  url=https://learn.ivves.eu/
 ```
 Port of command_executor needs to match the driver's (ex. WinAppDriver/chromedriver) port.
 
