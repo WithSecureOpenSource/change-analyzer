@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.1 (2021-12-03)
+### Fix
+* Find action from children ([`cfdfd67`](https://github.com/F-Secure/change-analyzer/commit/cfdfd67bf0814707f509fbbb4f29a8542eb67e19))
+
 ## v0.11.0 (2021-11-24)
 ### Feature
 * Add steps as argument ([`73ab8a9`](https://github.com/F-Secure/change-analyzer/commit/73ab8a91e12e496518c4b9e53a5a3dc758ba0d14))
