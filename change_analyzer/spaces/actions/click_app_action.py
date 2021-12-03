@@ -16,6 +16,18 @@ class ClickAppAction(AppAction):
         elif self.el.get_attribute("HelpText"):
             return f"click on {self.el.get_attribute('HelpText')}"
         elif self.el.tag_name:
-            return f"click on {self.el.tag_name}"
+            if 'ControlType' in self.el.tag_name:
+                # Specific to WinApps
+                return f"click on {self._find_element_text_from_children(self.el)}"
+            else:
+                return f"click on {self.el.tag_name}"
         else:
             return f"click on element from location ({self.el.location})"
+
+    @staticmethod
+    def _find_element_text_from_children(element:WebElement) -> str:
+        children_elements = element.find_elements_by_xpath("//*")
+        for child in children_elements:
+            if child.text != "":
+                return child.text
+        return ""
