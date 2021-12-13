@@ -42,6 +42,30 @@ def reset() -> WebDriver:
     return driver
 
 
+def run(config: str, steps: int = 0, csv_folder:str = ""):
+    CONFIG.read(config)
+
+    env = gym.make(
+        "app-v0" if CONFIG["driver"]["platform"] == "win" else "web-v0",
+        reset_app=reset,
+    )
+    # For some reason registration sometimes doesn't work and line above can fail, direct class creation as in line
+    # below could be used. See https://github.com/openai/gym/blob/master/docs/creating-environments.md for more info    # about registration.
+    # env = AppEnv(reset, {"Help"})
+    sequence_id = uuid.uuid1()
+    report_dir = "recordings/{}".format(datetime.now().strftime("%Y_%m_%d-%H_%M_%S"))
+    # env = EnhancedMonitor(env, report_dir)
+    env = SequenceRecorder(env, report_dir, sequence_id)
+    try:
+        env.reset()
+        if csv_folder:
+            ReplayAgent(env, csv_folder).run()
+        else:
+            RandomAgent(env, int(steps)).run()
+    finally:
+        env.close()
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -60,28 +84,7 @@ def main():
         required=False,
     )
     args = parser.parse_args()
-    CONFIG.read(args.config)
-
-    env = gym.make(
-        "app-v0" if CONFIG["driver"]["platform"] == "win" else "web-v0",
-        reset_app=reset,
-    )
-    # For some reason registration sometimes doesn't work and line above can fail, direct class creation as in line
-    # below could be used. See https://github.com/openai/gym/blob/master/docs/creating-environments.md for more info
-    # about registration.
-    # env = AppEnv(reset, {"Help"})
-    sequence_id = uuid.uuid1()
-    report_dir = "recordings/{}".format(datetime.now().strftime("%Y_%m_%d-%H_%M_%S"))
-    # env = EnhancedMonitor(env, report_dir)
-    env = SequenceRecorder(env, report_dir, sequence_id)
-    try:
-        env.reset()
-        if args.csv_folder:
-            ReplayAgent(env, args.csv_folder).run()
-        else:
-            RandomAgent(env, int(args.steps)).run()
-    finally:
-        env.close()
+    run(args.config, args.steps, args.csv_folder)
 
 
 if __name__ == "__main__":

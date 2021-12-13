@@ -332,6 +332,24 @@ def find_last_two_valid_folders() -> Tuple[str, str]:
 
     return csv_file_paths[0], csv_file_paths[1]
 
+
+def compare(sequence1_folder: str = "", sequence2_folder: str = ""):
+    sequence1_file = ""
+    sequence2_file = ""
+    if not sequence1_folder and not sequence2_folder:
+        sequence1_file, sequence2_file = find_last_two_valid_folders()
+
+    if sequence1_folder and not sequence2_folder:
+        sequence1_file = find_csv_file_within_folder(sequence1_folder)
+        sequence2_file, _ = find_last_two_valid_folders()
+
+    if sequence1_folder and sequence2_folder:
+        sequence1_file = find_csv_file_within_folder(sequence1_folder)
+        sequence2_file = find_csv_file_within_folder(sequence2_folder)
+
+    SequencesDiff(sequence1_file, sequence2_file)
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -345,21 +363,7 @@ def main():
         required=False,
     )
     args = parser.parse_args()
-
-    sequence1_file = ""
-    sequence2_file = ""
-    if not args.sequence1_folder and not args.sequence2_folder:
-        sequence1_file, sequence2_file = find_last_two_valid_folders()
-
-    if args.sequence1_folder and not args.sequence2_folder:
-        sequence1_file = find_csv_file_within_folder(args.sequence1_folder)
-        sequence2_file, _ = find_last_two_valid_folders()
-
-    if args.sequence1_folder and args.sequence2_folder:
-        sequence1_file = find_csv_file_within_folder(args.sequence1_folder)
-        sequence2_file = find_csv_file_within_folder(args.sequence2_folder)
-
-    SequencesDiff(sequence1_file, sequence2_file)
+    compare(args.sequence1_folder, args.sequence2_folder)
 
 
 if __name__ == "__main__":

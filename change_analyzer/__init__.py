@@ -3,6 +3,8 @@ __version__ = "0.11.1"
 import sys
 
 from gym.envs.registration import register
+from .main import run
+from .sequences_diff import compare
 
 
 register(
