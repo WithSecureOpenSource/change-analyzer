@@ -333,7 +333,7 @@ def find_last_two_valid_folders() -> Tuple[str, str]:
     return csv_file_paths[0], csv_file_paths[1]
 
 
-def run(sequence1_folder, sequence2_folder):
+def compare(sequence1_folder: str = "", sequence2_folder: str = ""):
     sequence1_file = ""
     sequence2_file = ""
     if not sequence1_folder and not sequence2_folder:
@@ -363,7 +363,7 @@ def main():
         required=False,
     )
     args = parser.parse_args()
-    run(args.sequence1_folder, args.sequence2_folder)
+    compare(args.sequence1_folder, args.sequence2_folder)
 
 
 if __name__ == "__main__":

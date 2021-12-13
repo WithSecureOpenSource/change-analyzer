@@ -42,7 +42,7 @@ def reset() -> WebDriver:
     return driver
 
 
-def run(config, steps):
+def run(config: str, steps: int = 0, csv_folder:str = ""):
     CONFIG.read(config)
 
     env = gym.make(
