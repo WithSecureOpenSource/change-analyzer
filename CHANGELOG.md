@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.12.0 (2021-12-13)
+### Feature
+* Add entrypoints to init ([`59939f9`](https://github.com/F-Secure/change-analyzer/commit/59939f9604508d12da769da3c48475d09d617db3))
+
+### Fix
+* Improve entrypoint arguments ([`c58abc6`](https://github.com/F-Secure/change-analyzer/commit/c58abc654f385f34fa0816568f577720ea1f76a9))
+
 ## v0.11.1 (2021-12-03)
 ### Fix
 * Find action from children ([`cfdfd67`](https://github.com/F-Secure/change-analyzer/commit/cfdfd67bf0814707f509fbbb4f29a8542eb67e19))
