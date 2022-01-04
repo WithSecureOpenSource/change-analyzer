@@ -1,5 +1,5 @@
 import uuid
-from configparser import ConfigParser
+from configparser import ConfigParser, NoOptionError
 from datetime import datetime
 import argparse
 
@@ -26,6 +26,12 @@ def reset() -> WebDriver:
             "deviceName": "WindowsPC",
         }
         driver = webdriver.Remote(CONFIG["driver"]["command_executor"], capabilities)
+        try:
+            timeout = CONFIG.get("driver", "timeout")
+        except NoOptionError:
+            timeout = 0
+        print(f"Current timeout:{timeout} seconds")
+        driver.implicitly_wait(timeout)
 
     if CONFIG["driver"]["platform"] == "web":
         web_options = webdriver.ChromeOptions()
