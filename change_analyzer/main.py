@@ -1,5 +1,5 @@
+import configparser
 import uuid
-from configparser import ConfigParser
 from datetime import datetime
 import argparse
 
@@ -14,7 +14,7 @@ from change_analyzer.wrappers.enhanced_monitor import EnhancedMonitor
 from change_analyzer.wrappers.sequence_recorder import SequenceRecorder
 
 
-CONFIG = ConfigParser()
+CONFIG = configparser.ConfigParser()
 
 
 def reset() -> WebDriver:
@@ -26,6 +26,12 @@ def reset() -> WebDriver:
             "deviceName": "WindowsPC",
         }
         driver = webdriver.Remote(CONFIG["driver"]["command_executor"], capabilities)
+        try:
+            timeout = CONFIG.get("driver", "timeout")
+            print(f"{timeout} second timeout defined.")
+            driver.implicitly_wait(timeout)
+        except configparser.NoOptionError:
+            print("No timeout defined.")
 
     if CONFIG["driver"]["platform"] == "web":
         web_options = webdriver.ChromeOptions()
