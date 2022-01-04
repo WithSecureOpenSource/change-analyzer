@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.0 (2022-01-04)
+### Feature
+* Add timeout for start of SUT ([`c296d90`](https://github.com/F-Secure/change-analyzer/commit/c296d90b02f39dff1487d6cf26b21add1a519eca))
+
 ## v0.12.0 (2021-12-13)
 ### Feature
 * Add entrypoints to init ([`59939f9`](https://github.com/F-Secure/change-analyzer/commit/59939f9604508d12da769da3c48475d09d617db3))
