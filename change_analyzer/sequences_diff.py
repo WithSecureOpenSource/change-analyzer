@@ -62,7 +62,8 @@ class SequencesDiff:
         }
         first_step_df = pd.DataFrame([first_step_data])
         self.df_merged = pd.concat([first_step_df, self.df_merged], ignore_index=True)
-        self.df_merged.to_csv(os.path.join(self.report_folder, 'df.csv.zip'), index=False)
+        compress_options = dict(method="zip", archive_name="df.csv")
+        self.df_merged.to_csv(os.path.join(self.report_folder, 'df.csv.zip'), index=False, compression=compress_options)
 
         # Add Platform
         self.df_merged['Platform'] = np.where(self.df_merged['PageSourceAfter_actual'].str.contains('html') |
