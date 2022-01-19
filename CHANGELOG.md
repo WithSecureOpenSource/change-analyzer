@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.1 (2022-01-19)
+### Fix
+* Compare result compress fix ([`f405ccc`](https://github.com/F-Secure/change-analyzer/commit/f405cccd20f2dfc537b97cec15f97ab0c557ddc6))
+
 ## v0.13.0 (2022-01-04)
 ### Feature
 * Add timeout for start of SUT ([`c296d90`](https://github.com/F-Secure/change-analyzer/commit/c296d90b02f39dff1487d6cf26b21add1a519eca))
