@@ -92,7 +92,7 @@ jobs:
   release:
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
     name: Publish
-    needs: check
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
