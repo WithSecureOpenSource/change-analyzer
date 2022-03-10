@@ -38,7 +38,9 @@ class SequenceRecorder(Wrapper, TransparentWrapperMixin):
         image_after = []
 
         try:
-            image_before = self.env.render("rgb_array").tolist()
+            if not isfile(self._csv_file):
+                # We are executing first step and only now we store image_before
+                image_before = self.env.render("rgb_array").tolist()
             obs, reward, done, info = self.env.step(action)
             image_after = self.env.render("rgb_array").tolist()
             page_source_after = self.get_enriched_page_source(info)
