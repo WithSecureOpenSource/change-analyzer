@@ -11,7 +11,7 @@ def _read_long_description():
 
 
 REQUIRE = [
-    "gym",
+    "gym==0.19.0",
     "appium-python-client==1.0.2",
     "Pillow",
     "pywinauto",
