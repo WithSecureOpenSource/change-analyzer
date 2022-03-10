@@ -11,7 +11,7 @@ def _read_long_description():
 
 
 REQUIRE = [
-    "gym",
+    "gym==0.19.0",
     "appium-python-client==1.0.2",
     "Pillow",
     "pywinauto",
@@ -28,7 +28,7 @@ REQUIRE = [
 DEV_REQUIRE = [
     "black",
     "jupyterlab",
-    "pytest",
+    "pytest==6.2.5",
     "python-semantic-release",
     "twine",
     "wheel",
