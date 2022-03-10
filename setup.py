@@ -28,7 +28,7 @@ REQUIRE = [
 DEV_REQUIRE = [
     "black",
     "jupyterlab",
-    "pytest",
+    "pytest==6.2.5",
     "python-semantic-release",
     "twine",
     "wheel",
