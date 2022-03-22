@@ -89,9 +89,42 @@ jobs:
           name: next_result
           path: ./next_result.txt
 
-  release:
+  release-docker:
     if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-    name: Publish
+    name: Publish Docker image
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7.10
+      - name: Configure AWS credentials
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-external-id: ${{ secrets.EXTERNAL_ID }}
+          role-duration-seconds: 1200
+          role-session-name: GithubAction
+      - name: Login, build, tag, and push image to Amazon ECR
+        env:
+          ECR_REGISTRY: public.ecr.aws/r8s9b0k4
+          ECR_REPOSITORY: ivves/change-analyzer
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  release-pypi:
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    name: Publish PyPI package
     needs: test
     runs-on: ubuntu-latest
     steps:
