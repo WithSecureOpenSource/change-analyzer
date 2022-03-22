@@ -25,7 +25,7 @@ REQUIRE = [
     "beautifulsoup4",
     "lxml",
     "ludwig==0.4",
-    "tensorflow==2.7.0"
+    "tensorflow==2.8.0"
 ]
 DEV_REQUIRE = [
     "black",
