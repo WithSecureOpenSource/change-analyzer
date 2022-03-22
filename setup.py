@@ -23,7 +23,9 @@ REQUIRE = [
     "matplotlib",
     "xmldiff",
     "beautifulsoup4",
-    "lxml"
+    "lxml",
+    "ludwig==0.4",
+    "tensorflow==2.7.0"
 ]
 DEV_REQUIRE = [
     "black",
