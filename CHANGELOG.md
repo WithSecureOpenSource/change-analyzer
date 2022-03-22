@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.14.0 (2022-03-22)
+### Feature
+* Publish docker images ([`ca1da99`](https://github.com/F-Secure/change-analyzer/commit/ca1da99aee4a23afd5317b8bda9ebfa8cab26578))
+
+### Fix
+* Add missing github action keyword ([`5e02f5c`](https://github.com/F-Secure/change-analyzer/commit/5e02f5cc5145eae6886985686e885a255e8b5be0))
+
 ## v0.13.2 (2022-03-10)
 ### Fix
 * Require successful pytest before publish ([`7d26850`](https://github.com/F-Secure/change-analyzer/commit/7d26850a92529c29684c3022391142bf1a6de4b4))
