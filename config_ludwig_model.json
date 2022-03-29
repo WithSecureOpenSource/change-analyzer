@@ -1,0 +1,52 @@
+{    
+	"input_features": [
+		{
+			"name": "ActionImage", 
+			"type": "image",
+			"preprocessing": {
+				"height": 150,
+				"width": 150,
+				"resize_method": "interpolate",
+				"scaling": "pixel_normalization"
+			}
+		},
+		{
+			"name": "ActionText",
+			"type": "text"
+		},
+		{
+			"name": "DistanceFromCenter",
+			"type": "numerical"
+		},
+		{
+			"name": "DistanceFromTopLeftCorner",
+			"type": "numerical"
+		},
+		{
+			"name": "ActiveScreen",
+			"type": "text"
+		},
+		{
+			"name": "PreviousSteps",
+			"type": "text"
+		},
+		{
+			"name": "ActionImageMainColorR",
+			"type": "numerical"
+		},
+		{
+			"name": "ActionImageMainColorG",
+			"type": "numerical"
+		},
+		{
+			"name": "ActionImageMainColorB",
+			"type": "numerical"
+		}
+	],
+	"output_features": [
+		{
+			"name": "Reward",
+			"type": "numerical"
+		}
+	]
+}
