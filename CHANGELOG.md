@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.14.1 (2022-03-29)
+### Fix
+* Fix missing comma ([`60fcded`](https://github.com/F-Secure/change-analyzer/commit/60fcded9acc4c860eb491bdde1165911feb9aa06))
+* Add more dependencies for explorer agent ([`1e3bcd2`](https://github.com/F-Secure/change-analyzer/commit/1e3bcd26e98a7bacf59eeb40ab1a2c4251701101))
+
 ## v0.14.0 (2022-03-22)
 ### Feature
 * Publish docker images ([`ca1da99`](https://github.com/F-Secure/change-analyzer/commit/ca1da99aee4a23afd5317b8bda9ebfa8cab26578))
