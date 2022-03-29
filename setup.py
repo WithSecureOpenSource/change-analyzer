@@ -25,7 +25,9 @@ REQUIRE = [
     "beautifulsoup4",
     "lxml",
     "ludwig==0.4",
-    "tensorflow==2.8.0"
+    "tensorflow==2.8.0",
+    "petastorm==0.11.3",
+    "ludwig[viz]",
 ]
 DEV_REQUIRE = [
     "black",
