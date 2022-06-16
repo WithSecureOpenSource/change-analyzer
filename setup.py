@@ -24,10 +24,16 @@ REQUIRE = [
     "xmldiff",
     "beautifulsoup4",
     "lxml",
-    "ludwig==0.4",
-    "tensorflow==2.8.0",
+    "ludwig==0.5.2",
+    "torch==1.11.0",
+    "torchaudio==0.11.0",
+    "torchinfo==1.7.0",
+    "torchmetrics==0.8.2",
+    "torchtext==0.12.0",
+    "torchvision==0.12.0",
     "petastorm==0.11.3",
     "ludwig[viz]",
+    "ludwig[image]"
 ]
 DEV_REQUIRE = [
     "black",
