@@ -55,7 +55,7 @@ class AppEnv(WebDriverEnv):
             current_open_windows = self._get_current_open_windows()
 
             for w in current_open_windows:
-                if "F-Secure" in w or "Software updates" in w:
+                if "F-Secure" in w or "Software updates" in w or "WithSecure" in w:
                     self._kill_app_based_on_window_title(window_title=w)
 
             # while not current_open_windows == initial_windows_without_sut:

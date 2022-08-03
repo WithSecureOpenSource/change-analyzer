@@ -83,7 +83,18 @@ class DiscreteAppActionSpace(Space):
             #     )
         self._logger.info(f"Found {len(self.actions)} actions on the screen")
 
+    def get_action_based_on_string(self, action_string: str) -> AppAction:
+        """
+        Get action based on it's associated string
+        :param action_string: the string of the action (element to use)
+        :return: the actual AppAction
+        """
+        for action in list(self.actions):
+            if action_string in str(action):
+                return action
+
     def sample(self) -> AppAction:
+        # return self.get_action_based_on_string('Manual scanning')
         return random.choice(list(self.actions))
 
     def contains(self, x: str) -> bool:

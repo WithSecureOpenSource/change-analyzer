@@ -10,6 +10,7 @@ from selenium.webdriver.remote.webdriver import WebDriver
 
 from change_analyzer.agents.random_agent import RandomAgent
 from change_analyzer.agents.replay_agent import ReplayAgent
+from change_analyzer.agents.explorer_agent import ExplorerAgent
 from change_analyzer.wrappers.enhanced_monitor import EnhancedMonitor
 from change_analyzer.wrappers.sequence_recorder import SequenceRecorder
 
@@ -48,7 +49,7 @@ def reset() -> WebDriver:
     return driver
 
 
-def run(config: str, steps: int = 0, csv_folder:str = ""):
+def run(config: str, steps: int = 0, csv_folder:str = "", strategy:str = ""):
     CONFIG.read(config)
 
     env = gym.make(
@@ -66,6 +67,8 @@ def run(config: str, steps: int = 0, csv_folder:str = ""):
         env.reset()
         if csv_folder:
             ReplayAgent(env, csv_folder).run()
+        elif strategy == 'rl':
+            ExplorerAgent(env, int(steps)).run()
         else:
             RandomAgent(env, int(steps)).run()
     finally:
@@ -89,8 +92,13 @@ def main():
         help="path to the folder within recordings which has the targeted csv file",
         required=False,
     )
+    parser.add_argument(
+        "--strategy",
+        help="define the agent strategy, either random or rl (reinforcement learning)",
+        required=False,
+    )
     args = parser.parse_args()
-    run(args.config, args.steps, args.csv_folder)
+    run(args.config, args.steps, args.csv_folder, args.strategy)
 
 
 if __name__ == "__main__":
