@@ -24,7 +24,7 @@ REQUIRE = [
     "xmldiff",
     "beautifulsoup4",
     "lxml",
-    "ludwig==0.5.2",
+    "ludwig==0.5.5",
     "torch==1.11.0",
     "torchaudio==0.11.0",
     "torchinfo==1.7.0",

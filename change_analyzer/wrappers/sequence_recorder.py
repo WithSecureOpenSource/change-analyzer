@@ -26,9 +26,13 @@ class SequenceRecorder(Wrapper, TransparentWrapperMixin):
 
     def __init__(self, env: gym.Env, directory: str, sequence_id: str) -> None:
         super(SequenceRecorder, self).__init__(env)
-        self._sequence_id = sequence_id
-        os.makedirs(directory, exist_ok=True)
-        self._csv_file = f"{directory}/{sequence_id}.csv"
+        # The ifs regarding sequence_id and directory are in place, to allow independent access to sequence_recorder
+        # functions, for example to get enriched page_source within Explorer agent - therefore we can have empty strings
+        if sequence_id:
+            self._sequence_id = sequence_id
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+            self._csv_file = f"{directory}/{sequence_id}.csv"
 
     def step(self, action: AppAction) -> Tuple[Dict, float, bool, WebDriver]:
         current_action = str(action)
