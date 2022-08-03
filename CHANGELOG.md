@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.15.0 (2022-08-03)
+### Feature
+* Add initial building blocks for reinforcement learning ([`44ea6b0`](https://github.com/F-Secure/change-analyzer/commit/44ea6b07b8f6b441a04b700a90ad06a1ee7ef7ec))
+
 ## v0.14.1 (2022-03-29)
 ### Fix
 * Fix missing comma ([`60fcded`](https://github.com/F-Secure/change-analyzer/commit/60fcded9acc4c860eb491bdde1165911feb9aa06))
