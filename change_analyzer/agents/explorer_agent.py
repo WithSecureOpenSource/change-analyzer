@@ -1,8 +1,9 @@
 import glob
 import os
+import re
 import time
 
-import torch
+import sys
 import pandas as pd
 import numpy as np
 import json
@@ -15,7 +16,6 @@ from change_analyzer.wrappers.sequence_recorder import SequenceRecorder
 from PIL import Image
 from bs4 import BeautifulSoup
 import math
-import warnings
 
 
 class ExplorerAgent(Agent):
@@ -26,6 +26,8 @@ class ExplorerAgent(Agent):
     # ActiveScreen is removed from TARGET_DF_COLUMNS
     MODEL_DF_COLUMNS = TARGET_DF_COLUMNS + ['Reward']
     INITIAL_STEP = []  # previously ["Main view"]
+    # We need to set numpy print options to maximum, in order to avoid truncating numpy arrays
+    np.set_printoptions(threshold=sys.maxsize)
 
     def __init__(self, env: gym.Env, total_steps: int = randrange(10)) -> None:
         super(ExplorerAgent, self).__init__(env)
@@ -35,12 +37,10 @@ class ExplorerAgent(Agent):
                                             key=os.path.getmtime)
         self.config = self.read_config_file()
         # Initialize needed dataframes and model
-        # Sequence dataframe - a dataframe that contains what will be recorded from the current sequence
         # Target dataframe - an intermediate dataframe which will hold the available actions
         # from current screen (used to make predictions) so starting_screen is the default initialization
         # Model dataframe - a dataframe that contains new training data for the Ludwig model
 
-        # self.sequence_df = pd.DataFrame(columns=ExplorerAgent.SEQUENCE_COLUMNS)
         self.target_df = pd.DataFrame(columns=ExplorerAgent.TARGET_DF_COLUMNS)
         self.model_df = pd.DataFrame(columns=ExplorerAgent.MODEL_DF_COLUMNS)
         self.model = None
@@ -263,9 +263,9 @@ class ExplorerAgent(Agent):
         # Originally action_img was numpy.ndarray.
         # Due to migration of Ludwig to 0.5, it has to be converted to a tensor
         action_img = self.get_action_image(self.image_before, action_coordinates)
-        print('Action img num of channels:', action_img.shape, len(action_img.shape))
-        action_img_tensor = torch.from_numpy(self.get_action_image(self.image_before,
-                                                                   action_coordinates)).permute(2, 0, 1)
+        # print('Action img num of channels:', action_img.shape, len(action_img.shape))
+        # action_img_tensor = torch.from_numpy(self.get_action_image(self.image_before,
+        #                                                            action_coordinates)).permute(2, 0, 1)
 
         # Get DistanceFromCenter
         distance_from_center = self.get_distance_from_center(action_coordinates, self.image_before)
@@ -282,7 +282,7 @@ class ExplorerAgent(Agent):
         model_df_for_action = pd.DataFrame(
             [
                 [
-                    action_img_tensor,
+                    action_img,
                     element_to_use,
                     distance_from_center,
                     distance_from_top_left_corner,
@@ -384,7 +384,8 @@ class ExplorerAgent(Agent):
         # Get all action images from model_df as PIL images
         # Actions images are now torch tensors and here are converted to numpy arrays
         # Permute tensor channels back from 2,0,1 to 1,2,0
-        action_images = [Image.fromarray(action_image.permute(1, 2, 0).numpy()) for action_image in self.model_df['ActionImage'].tolist()]
+        # action_images = [Image.fromarray(action_image.permute(1, 2, 0).numpy()) for action_image in self.model_df['ActionImage'].tolist()]
+        action_images = [Image.fromarray(action_image) for action_image in self.model_df['ActionImage'].tolist()]
 
         # Find the maximum height and width from images
         max_h, max_w = self.get_max_dims(action_images)
@@ -484,8 +485,15 @@ class ExplorerAgent(Agent):
         train_stats, _, _ = self.model.train(self.model_df)
         print('Model trained')
 
+    @staticmethod
+    def create_string_in_form_of_numpy_array(cell) -> str:
+        return re.sub(' +', ',', str(cell).replace('\n', '')).replace('[,', '[')
+
     def save_model_dataframe(self) -> None:
         """Save model dataframe, to be used later on in future models"""
-        print("Save the model dataframe")
         csv_file = os.path.join(self.latest_recordings_folder, 'model_df.csv')
+        print("ActionImage sample:\n", self.model_df['ActionImage'].iloc[0])
+        print("Convert column 'ActionImage' to string in form of numpy arrays")
+        self.model_df['ActionImage'] = self.model_df['ActionImage'].apply(self.create_string_in_form_of_numpy_array)
+        print("Save the model dataframe")
         self.model_df.to_csv(csv_file, index=False)
