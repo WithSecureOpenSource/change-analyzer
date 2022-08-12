@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.15.1 (2022-08-12)
+### Fix
+* Fix explorer agent ([`de815d2`](https://github.com/F-Secure/change-analyzer/commit/de815d2236ff4f202e2ed309b278eed9dbcebd81))
+
 ## v0.15.0 (2022-08-03)
 ### Feature
 * Add initial building blocks for reinforcement learning ([`44ea6b0`](https://github.com/F-Secure/change-analyzer/commit/44ea6b07b8f6b441a04b700a90ad06a1ee7ef7ec))
