@@ -49,7 +49,7 @@ def reset() -> WebDriver:
     return driver
 
 
-def run(config: str, steps: int = 0, csv_folder:str = "", strategy:str = ""):
+def run(config: str, steps: int = 0, csv_folder: str = "", strategy: str = "", model_dir: str = ""):
     CONFIG.read(config)
 
     env = gym.make(
@@ -68,7 +68,7 @@ def run(config: str, steps: int = 0, csv_folder:str = "", strategy:str = ""):
         if csv_folder:
             ReplayAgent(env, csv_folder).run()
         elif strategy == 'rl':
-            ExplorerAgent(env, int(steps)).run()
+            ExplorerAgent(env, int(steps), model_dir).run()
         else:
             RandomAgent(env, int(steps)).run()
     finally:
@@ -97,8 +97,13 @@ def main():
         help="define the agent strategy, either random or rl (reinforcement learning)",
         required=False,
     )
+    parser.add_argument(
+        "--model_dir",
+        help="add the name of the pretrained model to use from pretrained_models folder",
+        required=False,
+    )
     args = parser.parse_args()
-    run(args.config, args.steps, args.csv_folder, args.strategy)
+    run(args.config, args.steps, args.csv_folder, args.strategy, args.model_dir)
 
 
 if __name__ == "__main__":

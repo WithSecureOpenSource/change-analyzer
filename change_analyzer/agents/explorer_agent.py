@@ -27,7 +27,7 @@ class ExplorerAgent(Agent):
     # We need to set numpy print options to maximum, in order to avoid truncating numpy arrays
     np.set_printoptions(threshold=sys.maxsize)
 
-    def __init__(self, env: gym.Env, total_steps: int = randrange(10)) -> None:
+    def __init__(self, env: gym.Env, total_steps: int = randrange(10), model_dir: str = "") -> None:
         super(ExplorerAgent, self).__init__(env)
         self.total_steps = total_steps
         self.config_file = glob.glob(os.path.join(os.getcwd(), 'config_ludwig_model.json'))[0]
@@ -41,7 +41,10 @@ class ExplorerAgent(Agent):
         self.model_df = pd.DataFrame(columns=ExplorerAgent.MODEL_DF_COLUMNS)
         # Ludwig model - initially none
         self.model = None
-
+        if model_dir:
+            self.model = LudwigModel.load(model_dir)
+            print("Pretrained MODEL:\n", self.model)
+        self.model_path = "pretrained_model"
         self.image_before = Image.new(mode='RGB', size=(0, 0))
         self.image_after = Image.new(mode='RGB', size=(0, 0))
         self.page_source_before = None
@@ -54,50 +57,108 @@ class ExplorerAgent(Agent):
 
         for i in range(self.total_steps):
             try:
-                action = self.get_action()
-                element_to_use = str(action).replace('click on ', '')
+                if self.model:
+                    print(f"Step {i+1}: we have a model")
+                    # It means we can use model to predict action
+                    if i == 0:
+                        # Get available actions from current page only for first step.
+                        # For the rest of the steps, the available actions are gathered after the step is performed
+                        available_actions = [str(space_action) for space_action in self.env.action_space.actions]
 
-                # Before performing the step, we need to collect the data (session may be lost once we perform the step)
-                # Get image from the current screen, image_before - as numpy array
-                self.image_before = Image.fromarray(self.env.render("rgb_array"))
+                    # Any available action will give us the pagesource, such as first one
+                    first_action = list(self.env.action_space.actions)[0]
 
-                # Get page_source_before, using SequenceRecorder class
-                self.page_source_before = self.sequence_recorder_obj.get_enriched_page_source(action.el.parent)
+                    # Get page_source_before, using SequenceRecorder class
+                    self.page_source_before = self.sequence_recorder_obj.get_enriched_page_source(
+                        first_action.el.parent
+                    )
 
-                obs, _, done, info = self.env.step(action)
+                    # Get image from the current screen, image_before - as numpy array
+                    self.image_before = Image.fromarray(self.env.render("rgb_array"))
 
-                # Get available actions from current screen as list of strings
-                # - we know that for a first step we always should have actions, unless something bad happened
-                available_actions = [str(available_action) for available_action in self.env.action_space.actions]
+                    # We can update target dataframe, now that we are sure to have available action
+                    self.update_target_df(available_actions,
+                                          self.sequence_steps,
+                                          self.page_source_before,
+                                          self.image_before)
 
-                # Get image_after (already as PIL Image)
-                self.image_after = obs['screenshot']
+                    action = self.get_action()
+                    element_to_use = str(action).replace('click on ', '')
 
-                # Get enriched page_source_after using SequenceRecorder class
-                self.page_source_after = self.sequence_recorder_obj.get_enriched_page_source(action.el.parent)
+                    # Perform the step
+                    obs, _, done, info = self.env.step(action)
 
-                step_reward = self.reward(self.image_before, self.image_after, self.sequence_steps)
+                    available_actions = [str(available_action) for available_action in self.env.action_space.actions]
 
-                # Update model dataframe
-                self.update_model_df(element_to_use=element_to_use,
-                                     step_reward=step_reward,
-                                     sequence_steps=self.sequence_steps)
+                    # Get image_after (already as PIL Image)
+                    self.image_after = obs['screenshot']
 
-                # Update model config
-                self.update_config()
+                    # Get enriched page_source_after using SequenceRecorder class
+                    self.page_source_after = self.sequence_recorder_obj.get_enriched_page_source(action.el.parent)
 
-                # Initialize Ludwig model
-                self.init_model()
+                    # Calculate reward for the erformed step
+                    step_reward = self.reward(self.image_before, self.image_after, self.sequence_steps)
 
-                # Train Ludwig model using model dataframe
-                self.train_model()
+                    # Update model dataframe
+                    self.update_model_df(element_to_use=element_to_use,
+                                         step_reward=step_reward,
+                                         sequence_steps=self.sequence_steps)
 
-                if len(available_actions) == 0:
-                    # It means we have no available actions, and we need to quit
-                    done = True
+                    if len(available_actions) == 0:
+                        # It means we have no available actions, and we need to quit
+                        done = True
 
-                # We can update target dataframe, now that we are sure to have available actions
-                self.update_target_df(available_actions, self.sequence_steps)
+                else:
+                    action = self.get_action()
+                    element_to_use = str(action).replace('click on ', '')
+
+                    # Before performing the step, we need to collect the data (session may be lost once we perform the step)
+                    # Get image from the current screen, image_before - as numpy array
+                    self.image_before = Image.fromarray(self.env.render("rgb_array"))
+
+                    # Get page_source_before, using SequenceRecorder class
+                    self.page_source_before = self.sequence_recorder_obj.get_enriched_page_source(action.el.parent)
+
+                    obs, _, done, info = self.env.step(action)
+
+                    # Get available actions from current screen as list of strings
+                    # - we know that for a first step we always should have actions, unless something bad happened
+                    available_actions = [str(available_action) for available_action in self.env.action_space.actions]
+
+                    # Get image_after (already as PIL Image)
+                    self.image_after = obs['screenshot']
+
+                    # Get enriched page_source_after using SequenceRecorder class
+                    self.page_source_after = self.sequence_recorder_obj.get_enriched_page_source(action.el.parent)
+
+                    step_reward = self.reward(self.image_before, self.image_after, self.sequence_steps)
+
+                    # Update model dataframe
+                    self.update_model_df(element_to_use=element_to_use,
+                                         step_reward=step_reward,
+                                         sequence_steps=self.sequence_steps)
+
+                    # Update model config
+                    self.update_config()
+
+                    # Initialize Ludwig model
+                    self.init_model()
+
+                    # Train Ludwig model using model dataframe
+                    self.train_model()
+
+                    # Save model
+                    self.save_model()
+
+                    if len(available_actions) == 0:
+                        # It means we have no available actions, and we need to quit
+                        done = True
+
+                    # We can update target dataframe, now that we are sure to have available actions
+                    self.update_target_df(available_actions,
+                                          self.sequence_steps,
+                                          self.page_source_after,
+                                          self.image_after)
 
             except Exception as e:
                 self._logger.info("Action couldn't be performed due to an exception")
@@ -115,7 +176,6 @@ class ExplorerAgent(Agent):
                 done = True
 
             self.sequence_steps.append(element_to_use)
-
             if done:
                 break
 
@@ -134,6 +194,7 @@ class ExplorerAgent(Agent):
 
     def predict_action(self):
         # Make predictions using targeted dataframe and current trained model
+        print("Predict action")
         predictions, _ = self.model.predict(self.target_df)
 
         # Get a prediction (action with the highest reward)
@@ -308,7 +369,7 @@ class ExplorerAgent(Agent):
         self.config['input_features'][0]['preprocessing']['height'] = max_h
         self.config['input_features'][0]['preprocessing']['width'] = max_w
 
-    def update_target_df(self, available_actions, seq_steps):
+    def update_target_df(self, available_actions, seq_steps, page_source, image):
         """
         Create Target Dataframe, used for next step prediction
         The Dataframe consists of:
@@ -329,13 +390,12 @@ class ExplorerAgent(Agent):
         distances_from_center = []
         distances_from_top_left_center = []
 
-        # active_Screen_image is in fact self.image_after
         for action in available_actions:
-            action_coords = self.get_action_coords(self.page_source_after, action)
-            distances_from_center.append(self.get_distance_from_center(action_coords, self.image_after))
+            action_coords = self.get_action_coords(page_source, action)
+            distances_from_center.append(self.get_distance_from_center(action_coords, image))
             distances_from_top_left_center.append(self.get_distance_from_top_left_corner(action_coords))
 
-        action_images = self.get_actions_images_from_screen(self.image_after, self.page_source_after, available_actions)
+        action_images = self.get_actions_images_from_screen(image, page_source, available_actions)
 
         main_color_rs = []
         main_color_gs = []
@@ -376,6 +436,10 @@ class ExplorerAgent(Agent):
 
     def train_model(self):
         train_stats, _, _ = self.model.train(self.model_df)
+
+    def save_model(self):
+        print("Save the model")
+        self.model.save(self.model_path)
 
     @staticmethod
     def create_string_in_form_of_numpy_array(cell) -> str:

@@ -1,0 +1,183 @@
+{
+    "ActionImage": {
+        "preprocessing": {
+            "height": 49,
+            "in_memory": true,
+            "infer_image_dimensions": true,
+            "infer_image_max_height": 256,
+            "infer_image_max_width": 256,
+            "infer_image_num_channels": true,
+            "infer_image_sample_size": 100,
+            "missing_value_strategy": "backfill",
+            "num_channels": 3,
+            "num_processes": 1,
+            "resize_method": "interpolate",
+            "scaling": "pixel_normalization",
+            "width": 204
+        },
+        "reshape": [
+            3,
+            49,
+            204
+        ]
+    },
+    "ActionImageMainColorB": {
+        "preprocessing": {
+            "computed_fill_value": 0,
+            "fill_value": 0,
+            "missing_value_strategy": "fill_with_const",
+            "normalization": null
+        }
+    },
+    "ActionImageMainColorG": {
+        "preprocessing": {
+            "computed_fill_value": 0,
+            "fill_value": 0,
+            "missing_value_strategy": "fill_with_const",
+            "normalization": null
+        }
+    },
+    "ActionImageMainColorR": {
+        "preprocessing": {
+            "computed_fill_value": 0,
+            "fill_value": 0,
+            "missing_value_strategy": "fill_with_const",
+            "normalization": null
+        }
+    },
+    "ActionText": {
+        "idx2str": [
+            "<EOS>",
+            "<SOS>",
+            "<PAD>",
+            "<UNK>",
+            "scan",
+            "full",
+            "computer",
+            "manual",
+            "scanning"
+        ],
+        "max_sequence_length": 5,
+        "max_sequence_length_99ptile": 4.99,
+        "pad_idx": 2,
+        "padding_symbol": "<PAD>",
+        "preprocessing": {
+            "computed_fill_value": "<UNK>",
+            "fill_value": "<UNK>",
+            "lowercase": true,
+            "max_sequence_length": 256,
+            "missing_value_strategy": "fill_with_const",
+            "most_common": 20000,
+            "padding": "right",
+            "padding_symbol": "<PAD>",
+            "pretrained_model_name_or_path": null,
+            "tokenizer": "space_punct",
+            "unknown_symbol": "<UNK>",
+            "vocab_file": null
+        },
+        "str2freq": {
+            "<EOS>": 0,
+            "<PAD>": 0,
+            "<SOS>": 0,
+            "<UNK>": 0,
+            "computer": 1,
+            "full": 1,
+            "manual": 1,
+            "scan": 1,
+            "scanning": 1
+        },
+        "str2idx": {
+            "<EOS>": 0,
+            "<PAD>": 2,
+            "<SOS>": 1,
+            "<UNK>": 3,
+            "computer": 6,
+            "full": 5,
+            "manual": 7,
+            "scan": 4,
+            "scanning": 8
+        },
+        "unknown_symbol": "<UNK>",
+        "vocab_size": 9
+    },
+    "DistanceFromCenter": {
+        "preprocessing": {
+            "computed_fill_value": 0,
+            "fill_value": 0,
+            "missing_value_strategy": "fill_with_const",
+            "normalization": null
+        }
+    },
+    "DistanceFromTopLeftCorner": {
+        "preprocessing": {
+            "computed_fill_value": 0,
+            "fill_value": 0,
+            "missing_value_strategy": "fill_with_const",
+            "normalization": null
+        }
+    },
+    "PreviousSteps": {
+        "idx2str": [
+            "<EOS>",
+            "<SOS>",
+            "<PAD>",
+            "<UNK>",
+            "]",
+            "'",
+            "[",
+            "manual",
+            "scanning"
+        ],
+        "max_sequence_length": 8,
+        "max_sequence_length_99ptile": 7.96,
+        "pad_idx": 2,
+        "padding_symbol": "<PAD>",
+        "preprocessing": {
+            "computed_fill_value": "<UNK>",
+            "fill_value": "<UNK>",
+            "lowercase": true,
+            "max_sequence_length": 256,
+            "missing_value_strategy": "fill_with_const",
+            "most_common": 20000,
+            "padding": "right",
+            "padding_symbol": "<PAD>",
+            "pretrained_model_name_or_path": null,
+            "tokenizer": "space_punct",
+            "unknown_symbol": "<UNK>",
+            "vocab_file": null
+        },
+        "str2freq": {
+            "'": 2,
+            "<EOS>": 0,
+            "<PAD>": 0,
+            "<SOS>": 0,
+            "<UNK>": 0,
+            "[": 2,
+            "]": 2,
+            "manual": 1,
+            "scanning": 1
+        },
+        "str2idx": {
+            "'": 5,
+            "<EOS>": 0,
+            "<PAD>": 2,
+            "<SOS>": 1,
+            "<UNK>": 3,
+            "[": 6,
+            "]": 4,
+            "manual": 7,
+            "scanning": 8
+        },
+        "unknown_symbol": "<UNK>",
+        "vocab_size": 9
+    },
+    "Reward": {
+        "preprocessing": {
+            "fill_value": 0,
+            "missing_value_strategy": "drop_row",
+            "normalization": null
+        }
+    },
+    "checksum": "5BG0p4IE_GflRRxIp9GLpg==",
+    "data_train_hdf5_fp": "C:\\projects\\change-analyzer\\13333cee1e2911eda8ec18cc18ca8900.training.hdf5"
+}
