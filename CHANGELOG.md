@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.16.0 (2022-08-26)
+### Feature
+* Add pretrained models option when using reinforcement learning ([`9ab21a2`](https://github.com/F-Secure/change-analyzer/commit/9ab21a2b5fc4a038d56ad7dc8d7e1ad4816a6577))
+
 ## v0.15.1 (2022-08-12)
 ### Fix
 * Fix explorer agent ([`de815d2`](https://github.com/F-Secure/change-analyzer/commit/de815d2236ff4f202e2ed309b278eed9dbcebd81))
