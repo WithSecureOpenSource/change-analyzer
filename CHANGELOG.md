@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.16.1 (2022-08-29)
+### Fix
+* Fix documentation to reflect latest changes ([`b3871c5`](https://github.com/F-Secure/change-analyzer/commit/b3871c52705b48d646541350a1697875527c2cf1))
+
 ## v0.16.0 (2022-08-26)
 ### Feature
 * Add pretrained models option when using reinforcement learning ([`9ab21a2`](https://github.com/F-Secure/change-analyzer/commit/9ab21a2b5fc4a038d56ad7dc8d7e1ad4816a6577))
