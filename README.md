@@ -15,11 +15,13 @@
     - [5. Run the software](#5-run-the-software)
     - [6. Compare results](#6-compare-results)
   - [Available commands](#available-commands)
+    - [1. ca-run](#1-ca-run)
+    - [2. ca-compare](#2-ca-compare)
   - [Configuration files](#configuration-files)
   - [Acknowledgement](#acknowledgement)
 
 ## About
-Change-Analyzer (CA in short) is a framework built utilizing ML techniques, leveraging [OpenAI Gym library](https://gym.openai.com/). 
+Change-Analyzer (CA in short) is a framework built utilizing ML techniques, leveraging [OpenAI Gym library](https://gym.openai.com/) and [LudwigAI framework](https://ludwig-ai.github.io/ludwig-docs/0.5/). 
 CA allows product teams to get feedback regarding their software product, aka SUT (System Under Test).
 
 ### Main Data features
@@ -49,7 +51,7 @@ Data collected has the same structure as described in the above section.
 
 ### Data Analysis
 In this phase, two sequences are analyzed. The sequences are the same, from steps perspective, but are executed against 
-different SUT versions.</br>
+different SUT versions (deltas).</br>
 A report is created, to showcase the differences between the two sequences, if any. The goal is to provide a visual tool 
 for change detection.</br>
 The report will contain the following info:
@@ -128,20 +130,52 @@ Requires two generated test results.
 * Open CMD and change directory to source code root.
 * Activate virtual environment: ```.venv\Scripts\activate```
 * Compare results: ```ca-compare --sequence1_folder [Test folder 1] --sequence2_folder [Test folder 2]```
-  * Replace [Test folder 1] with real results folder name (example 2021_10_05-14_15_00).
+  * Replace `[Test folder 1]` with real results folder name (example 2021_10_05-14_15_00).
   * Test results are generated to *recordings* directory.
   * Argument paths starts from *recordings* directory.
 
 ## Available commands
-* ```ca-run```
-  * Used to generate new test results.
-  * Requires ```--config``` parameter. Defines which .ini file to use.
-  * Replay mode available using ```--csv_folder``` parameter.
-  * Results can be found under *recordings* directory.
-* ```ca-compare```
-  * Used to compare two test results.
-  * Define test directories with ```--sequence1_folder``` and ```--sequence2_folder``` parameters.
-  * Results can be found under sequence 1 directory.
+
+### 1. ca-run 
+It is used to explore a given application and generate new test results.
+
+#### Parameters
+* `--config` (mandatory) - Defines which .ini file to use. Currently, Windows and Web platforms are supported.
+* `--csv_folder` (optional) - it triggers the Replay mode. Replay will run the sequence found within the csv_folder. 
+* `--steps`(optional) - it represents the number of total steps desired for the sequence to have (default is 10)
+* `--strategy`(optional) - it defines the agent strategy, either random or rl (reinforcement learning) 
+* `--model_dir` (optional) - it specifies the name of the pretrained model to use from pretrained_models folder
+
+#### Results
+Results can be found within `recordings` folder in a dedicated sub-folder.
+
+#### Command examples
+1a. `ca-run --config win.ini --steps 5 --strategy rl --model_dir model1`
+
+CA will run using the config file **win.ini** and  will aim to have a sequence of **5 steps**. It will also use
+**reinforcement learning** as strategy, with the pretrained model **model1**.
+
+1b. `ca-run --config web.ini --steps 15`
+
+CA will run using the config file **web.ini** and  will aim to have a sequence of **15 steps**. In this case, 
+the strategy to get the next action is random.
+
+### 2. ca-compare
+It is used to compare two test results of the same test sequence, applied to two versions of the same SUT.
+
+#### Parameters
+* `--sequence1_folder` (optional) - recordings folder with the **expected** test results
+* `--sequence2_folder` (optional) - recordings folder with the **actual** test results
+
+**Note:** If both sequences are missing, CA will attempt to find the last two test results
+
+#### Results
+Results can be found within `sequence1_folder` folder in a dedicated sub-folder.
+
+#### Command examples
+2a. `ca-compare --sequence1_folder 2022_08_26-12_14_34 --sequence2_folder 2022_08_26-12_24_45`
+
+CA will compare the test results from defined sequence1_folder (expected) and sequence2_folder (actual).
 
 ## Configuration files
 This project uses <a href="https://docs.python.org/3/library/configparser.html">.ini files</a> as configure files to change software's behavior. **User must define own configuration files.** Ini file must define following values:
